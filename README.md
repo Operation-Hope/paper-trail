@@ -1,3 +1,4 @@
+```
 paper-trail/
 ├── .gitignore
 ├── app.py
@@ -14,3 +15,4 @@ paper-trail/
     ├── feedback.html
     └── index.html
   
+```
