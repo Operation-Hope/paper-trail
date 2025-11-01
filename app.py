@@ -2,7 +2,7 @@ import os
 import psycopg2
 import psycopg2.extras
 from flask import Flask, render_template, jsonify, request
-from data_scripts import test  # Assuming test.py holds your conn_params
+from data_scripts import config
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
@@ -18,11 +18,11 @@ TOPIC_INDUSTRY_MAP = {
     "Foreign Relations": ["Pro-Israel"],
     "Government Operations": ["Government"]
 }
-# ---------------------------------
+
 
 def get_db_connection():
     """Establishes database connection."""
-    conn = psycopg2.connect(**test.conn_params)
+    conn = psycopg2.connect(**config.conn_params)
     return conn
 
 @app.route('/')

@@ -10,12 +10,12 @@ __pycache__/
 *.zip
 *.json
 *.csv
-*.txt
 
 # Ignore the data directories (already in your original gitignore)
 /contributions/
 /votes/
 /bills/
+sql/
 
 
 # --- Standard Python and OS Exclusions ---

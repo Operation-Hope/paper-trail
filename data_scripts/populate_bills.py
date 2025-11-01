@@ -7,11 +7,11 @@ import psycopg2
 import datetime
 import time
 from psycopg2.extras import execute_values
-import test as test  # Imports your configuration file
+import data_scripts.config as config  # Imports your configuration file
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py
-BILL_DATA_PATH = test.BILL_DATA_PATH
+BILL_DATA_PATH = config.BILL_DATA_PATH
 
 # Define the range of Congresses you downloaded
 START_CONGRESS = 108
@@ -66,7 +66,7 @@ def parse_and_insert_enacted_laws_fast(base_path):
 
     try:
         # Connect using the details from test.py
-        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**test.conn_params) 
+        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**config.conn_params) 
         
         create_bills_table_if_not_exists(conn)
         clear_bills_table(conn)

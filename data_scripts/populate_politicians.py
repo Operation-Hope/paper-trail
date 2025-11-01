@@ -5,11 +5,11 @@ from psycopg2.extras import execute_values
 import re 
 import sys
 import os
-import test as test  # Imports your new test.py file
+import data_scripts.config as config  # Imports your new test.py file
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py
-CONGRESS_GOV_API_KEY = test.CONGRESS_GOV_API_KEY
+CONGRESS_GOV_API_KEY = config.CONGRESS_GOV_API_KEY
 START_CONGRESS = 108
 END_CONGRESS = 119
 CURRENT_CONGRESS = 119
@@ -138,7 +138,7 @@ def insert_politicians_final_active():
     conn = None; total_processed_api_records = 0; session = requests.Session()
     try:
         # --- THIS IS THE CORRECTED LINE ---
-        print("Connecting..."); conn = psycopg2.connect(**test.conn_params) 
+        print("Connecting..."); conn = psycopg2.connect(**config.conn_params) 
         
         create_politicians_table_if_not_exists(conn)
         clear_politicians_table(conn); 
