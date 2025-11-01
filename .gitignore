@@ -1,0 +1,50 @@
+# Environment variables
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+
+
+# Ignore downloaded bulk data files
+*.zip
+*.json
+*.csv
+*.txt
+
+# Ignore the data directories (already in your original gitignore)
+/contributions/
+/votes/
+/bills/
+
+
+# --- Standard Python and OS Exclusions ---
+
+# Byte-compiled / optimized / DLL files
+*.py[codz]
+*$py.class
+
+# Virtual Environments (local environments for development)
+.venv/
+venv/
+env/
+.envrc
+
+# Build/Packaging
+build/
+dist/
+*.egg-info/
+
+# Operating System/Editor Files (e.g., VS Code or PyCharm settings)
+.DS_Store
+.vscode/
+.idea/
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Flask stuff:
+instance/
+*.log
