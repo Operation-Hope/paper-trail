@@ -1,3 +1,4 @@
+REPOSITORY TREE
 ```
 paper-trail/
 ├── .gitignore
