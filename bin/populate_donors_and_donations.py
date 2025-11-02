@@ -6,7 +6,9 @@ import psycopg2
 import time
 import requests
 from psycopg2.extras import execute_values
-import data_scripts.config as config # Imports your configuration file
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+import app.config as config  # Imports your configuration file
 import traceback
 import sys # <--- ADD THIS IMPORT
 

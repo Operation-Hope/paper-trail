@@ -1,7 +1,6 @@
 .git
 .gitignore
 README.md
-*.sql
 *.log
 .env
 __pycache__

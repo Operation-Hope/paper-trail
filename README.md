@@ -69,8 +69,9 @@ podman run -d --pod=pod-paper-trail \
     --secret DB_PASSWORD,type=env,target=POSTGRES_PASSWORD \
     docker.io/postgres:latest
 
+
+# -p 5000:5000 only needed when local container used, otherwise pod exposes it above. 
 podman run --rm -d --pod=pod-paper-trail --name=paper-trail \
-    -p 5000:5000 \
     --secret DB_NAME,type=env,target=DB_NAME \
     --secret DB_HOST,type=env,target=DB_HOST \
     --secret DB_PORT,type=env,target=DB_PORT \
