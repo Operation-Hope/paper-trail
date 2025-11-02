@@ -40,13 +40,6 @@ def donor_search():
     """Serves the donor_search.html file."""
     return render_template('donor_search.html')
 
-# --- NEW ROUTE FOR FEEDBACK PAGE ---
-@app.route('/feedback.html')
-def feedback():
-    """Serves the feedback.html file."""
-    return render_template('feedback.html')
-# -----------------------------------
-
 @app.route('/api/politicians/search')
 def search_politicians():
     """Searches for politicians by name."""
@@ -395,3 +388,4 @@ def get_all_bill_subjects():
 if __name__ == "__main__":
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=debug_mode)
+
