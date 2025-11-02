@@ -6,7 +6,7 @@ import psycopg2
 import time
 import requests
 from psycopg2.extras import execute_values
-import test as test # Imports your configuration file
+import data_scripts.config as config # Imports your configuration file
 import traceback
 import sys # <--- ADD THIS IMPORT
 
@@ -18,7 +18,7 @@ csv.field_size_limit(max_int)
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py
-FEC_DATA_FOLDER_PATH = test.FEC_DATA_FOLDER_PATH
+FEC_DATA_FOLDER_PATH = config.FEC_DATA_FOLDER_PATH
 BATCH_SIZE = 5000
 
 # --- Global Lookups ---
@@ -363,7 +363,7 @@ def main():
     conn = None
     try:
         # Connect using the details from test.py
-        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**test.conn_params)
+        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**config.conn_params)
 
         create_tables_if_not_exists(conn)
 

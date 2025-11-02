@@ -6,11 +6,11 @@ import psycopg2
 import time
 from psycopg2.extras import execute_values
 import re
-import test as test # Imports your configuration file
+import data_scripts.config as config # Imports your configuration file
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py
-FEC_DATA_FOLDER_PATH = test.FEC_DATA_FOLDER_PATH
+FEC_DATA_FOLDER_PATH = config.FEC_DATA_FOLDER_PATH
 BATCH_SIZE = 500
 
 # --- STATE ABBREVIATION MAP ---
@@ -114,7 +114,7 @@ def build_mapping_table():
     conn = None
     try:
         # Connect using the details from test.py
-        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**test.conn_params) 
+        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**config.conn_params) 
         
         create_fec_map_table_if_not_exists(conn)
         load_politician_lookup(conn) 

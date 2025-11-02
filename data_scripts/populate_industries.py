@@ -1,6 +1,6 @@
 import psycopg2
 import psycopg2.extras
-import test # Or 'import test' if this file is in data_scripts
+import data_scripts.config as config # Or 'import test' if this file is in data_scripts
 import time
 
 # --- Comprehensive Industry Mapping ---
@@ -145,7 +145,7 @@ def get_db_connection():
     # conn = psycopg2.connect(**test.conn_params)
     
     # If populate_industries.py is in the ROOT folder (with app.py), use:
-    conn = psycopg2.connect(**test.conn_params)
+    conn = psycopg2.connect(**config.conn_params)
     return conn
 
 # --- Main Update Function ---

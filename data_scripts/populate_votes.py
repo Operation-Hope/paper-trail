@@ -4,13 +4,13 @@ import psycopg2
 import time
 from psycopg2.extras import execute_values
 import re
-import test as test # Imports your configuration file
+import data_scripts.config as config # Imports your configuration file
 import traceback
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py
-VOTE_DATA_FOLDER_PATH = test.VOTE_DATA_FOLDER_PATH
-MEMBER_FILE_PATH = test.MEMBER_FILE_PATH
+VOTE_DATA_FOLDER_PATH = config.VOTE_DATA_FOLDER_PATH
+MEMBER_FILE_PATH = config.MEMBER_FILE_PATH
 BATCH_SIZE = 5000 
 START_CONGRESS = 108 # Required for the bill lookup
 
@@ -192,7 +192,7 @@ def process_and_insert_votes():
     conn = None; total_inserted_votes = 0; total_votes_processed = 0
     try:
         # Connect using the details from test.py
-        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**test.conn_params)
+        print("Connecting to PostgreSQL..."); conn = psycopg2.connect(**config.conn_params)
         
         create_votes_table_if_not_exists(conn)
         load_db_lookups(conn)
