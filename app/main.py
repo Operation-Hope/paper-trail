@@ -1,9 +1,11 @@
 import psycopg2
 import psycopg2.extras
+import os
 from flask import Flask, render_template, jsonify, request
-import config
+from app import config
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+
+app = Flask(__name__)
 
 # --- TOPIC TO INDUSTRY MAPPING ---
 TOPIC_INDUSTRY_MAP = {
@@ -391,4 +393,5 @@ def get_all_bill_subjects():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=debug_mode)
