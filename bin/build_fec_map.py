@@ -6,7 +6,7 @@ import psycopg2
 import time
 from psycopg2.extras import execute_values
 import re
-import data_scripts.config as config # Imports your configuration file
+from app.config import conn_params # Imports your configuration file
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py

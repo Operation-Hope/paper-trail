@@ -1,7 +1,12 @@
 import psycopg2
 import logging
+import os
+import sys
 from pathlib import Path
-from data_scripts.config import conn_params
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+from app.config import conn_params
 
 
 logging.basicConfig(
@@ -66,7 +71,7 @@ def load_sql_files(db_config, folder_path, schema="pt"):
 
 
 def main():
-    sql_folder = "./sql"
+    sql_folder = "./"
     load_sql_files(conn_params, sql_folder, schema="pt")
 
 

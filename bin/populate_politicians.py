@@ -5,7 +5,7 @@ from psycopg2.extras import execute_values
 import re 
 import sys
 import os
-import data_scripts.config as config  # Imports your new test.py file
+import app.config as config  # Imports your new test.py file
 
 # --- CONFIGURATION ---
 # All config is now pulled from test.py

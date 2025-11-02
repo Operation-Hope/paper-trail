@@ -1,6 +1,10 @@
 import psycopg2
 import psycopg2.extras
-import data_scripts.config as config # Or 'import test' if this file is in data_scripts
+import os
+import sys
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+import app.config as config  # Or 'import test' if this file is in data_scripts
 import time
 
 # --- Comprehensive Industry Mapping ---
