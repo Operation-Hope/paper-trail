@@ -15,3 +15,4 @@ venv/
 Dockerfile.dev
 docker-compose.yml
 paper-trail-dump
+*.bz2

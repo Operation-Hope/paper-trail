@@ -31,9 +31,11 @@ podman pod create -p 5000:5000 --name=pod-paper-trail \
 && \
 podman pod start pod-paper-trail
 
+# untar the pg_dump.tar.bz2 file before mounting it to the pg container.
 podman run -d --pod=pod-paper-trail \
     --name=paper_trail_db \
     -v paper-trail-data:/var/lib/postgresql/data \
+    -v ./bin/paper-trail-dump:/paper-trail-dump:ro \ 
     --secret DB_NAME,type=env,target=POSTGRES_DB \
     --secret DB_HOST,type=env,target=POSTGRES_SERVER \
     --secret DB_PORT,type=env,target=POSTGRES_PORT \
