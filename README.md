@@ -1,31 +1,3 @@
-REPOSITORY TREE
-```
-paper-trail/
-├── .dev.env
-├── .gitignore
-├── README.md
-├── requirements.txt
-├── app/
-└── ├── __init__.py
-    ├── config.py
-    ├── main.py
-    └── templates/
-        ├──.gitkeep
-        ├── donor_search.html
-        └── index.html
-└── bin/
-    ├── bootstrap.sql
-    ├── build_fec_map.py
-    ├── load_sql.py
-    ├── populate_bills.py
-    ├── populate_donors_and_donations.py
-    ├── populate_industries.py
-    ├── populate_politicians.py
-    ├── populate_votes.py
-    └── sql_data.tar.bz2
-  
-```
-
 ## Local dev set up instructions
 
 **todo** add postgres install or container install instructions and .env
@@ -80,3 +52,12 @@ podman run --rm -d --pod=pod-paper-trail --name=paper-trail \
     paper-trail
 
 ```
+
+Restore db:
+
+```
+cd bin
+tar -xvf pg-dump.tar.bz2 
+```
+
+This will give you the dump file paper-trail-dump which you can then copy to your postgres db. If using a container, you can copy it into the container then then restore `psql postres < paper-trail-dump` 
