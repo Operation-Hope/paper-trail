@@ -9,6 +9,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
+import { Search } from 'lucide-react';
 
 export default function PoliticianSearch() {
   const {
@@ -132,8 +133,22 @@ export default function PoliticianSearch() {
       ) : query.length >= 2 && !isLoading && !error ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-muted-foreground">
-              No politicians found matching "{query}"
+            <div className="text-center py-12 space-y-4">
+              <Search className="h-16 w-16 mx-auto text-muted-foreground/50" />
+              <div>
+                <h3 className="font-semibold text-lg mb-2">No Results Found</h3>
+                <p className="text-muted-foreground text-sm max-w-md mx-auto mb-3">
+                  No politicians found matching <span className="font-semibold">"{query}"</span>
+                </p>
+                <p className="text-muted-foreground text-xs max-w-md mx-auto">
+                  Try searching with:
+                </p>
+                <ul className="text-muted-foreground text-xs text-left inline-block mt-2 space-y-1">
+                  <li>• Full or partial first/last name</li>
+                  <li>• Different spelling variations</li>
+                  <li>• Only the last name</li>
+                </ul>
+              </div>
             </div>
           </CardContent>
         </Card>

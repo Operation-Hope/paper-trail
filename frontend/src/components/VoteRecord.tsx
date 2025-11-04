@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
-import { X, Info } from 'lucide-react';
+import { X, Info, FileSearch } from 'lucide-react';
 import { api } from '../services/api';
 import type { Vote } from '../types/api';
 
@@ -204,8 +204,26 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
       ) : !voteData || voteData.votes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-muted-foreground">
-              No votes found with the current filters.
+            <div className="text-center py-12 space-y-4">
+              <FileSearch className="h-16 w-16 mx-auto text-muted-foreground/50" />
+              <div>
+                <h3 className="font-semibold text-lg mb-2">No Votes Found</h3>
+                <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                  No voting records match your current filters. Try adjusting the bill type, subject, or sort order to see more results.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setBillType('');
+                  setSubject('');
+                  setSortOrder('DESC');
+                  setCurrentPage(1);
+                }}
+              >
+                Clear All Filters
+              </Button>
             </div>
           </CardContent>
         </Card>

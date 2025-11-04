@@ -11,6 +11,7 @@ import type { DonationSummary } from '../types/api';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { PieChart } from 'lucide-react';
 
 // CRITICAL: Register Chart.js components before use
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -123,9 +124,22 @@ export default function DonationChart({
   if (donations.length === 0) {
     return (
       <Card>
-        <CardContent className="pt-6">
-          <div className="text-muted-foreground text-center py-8">
-            No donation data available
+        <CardHeader>
+          <CardTitle className="text-xl">
+            {selectedTopic ? `Donation Summary (Filtered by: ${selectedTopic})` : 'Donation Summary'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-12 space-y-4">
+            <PieChart className="h-16 w-16 mx-auto text-muted-foreground/50" />
+            <div>
+              <h3 className="font-semibold text-lg mb-2">No Donation Data</h3>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                {selectedTopic
+                  ? `No large donations found for "${selectedTopic}" related industries. Try selecting a different topic to explore other donation patterns.`
+                  : 'No large donation records found for this politician in our database. This may indicate no reportable donations over the minimum threshold.'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
