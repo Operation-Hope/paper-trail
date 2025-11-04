@@ -57,6 +57,21 @@ export default function Header() {
                 Feedback
               </NavLink>
             </nav>
+            <button
+              onClick={() => {
+                const event = new KeyboardEvent('keydown', {
+                  key: 'k',
+                  metaKey: true,
+                  bubbles: true,
+                });
+                document.dispatchEvent(event);
+              }}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs rounded-md border border-white/20 hover:bg-white/10 transition-colors"
+              title="Search (Cmd+K or Ctrl+K)"
+            >
+              <span>Search</span>
+              <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/20 rounded">⌘K</kbd>
+            </button>
             <ThemeToggle />
           </div>
         </div>

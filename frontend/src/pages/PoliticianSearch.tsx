@@ -2,6 +2,7 @@
  * Politician Search page (main landing page)
  * Allows users to search for politicians and view their voting records and donation data
  */
+import { useEffect } from 'react';
 import { usePoliticianSearch } from '../hooks/usePoliticianSearch';
 import { PoliticianCard } from '../components/PoliticianCard';
 import { PoliticianDetails } from '../components/PoliticianDetails';
@@ -10,6 +11,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
 import { Search } from 'lucide-react';
+import type { Politician } from '../types/api';
 
 export default function PoliticianSearch() {
   const {
@@ -23,6 +25,17 @@ export default function PoliticianSearch() {
     selectPolitician,
     clearSelection,
   } = usePoliticianSearch();
+
+  // Listen for politician selection from command palette
+  useEffect(() => {
+    const handleCommandSelection = (event: Event) => {
+      const customEvent = event as CustomEvent<Politician>;
+      selectPolitician(customEvent.detail);
+    };
+
+    window.addEventListener('selectPoliticianFromCommand', handleCommandSelection);
+    return () => window.removeEventListener('selectPoliticianFromCommand', handleCommandSelection);
+  }, [selectPolitician]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
