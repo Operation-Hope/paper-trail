@@ -846,5 +846,26 @@ All screenshots saved to `.tmp/` directory:
 
 ---
 
+### VISUAL DESIGN IMPROVEMENTS
+
+#### ✅ 6. TYT Brand-Aligned Color Palette
+**Status**: Completed - 2025-11-04
+**Implementation**:
+- **Light Mode**:
+  - Primary: red-600 (#dc2626) - TYT brand color
+  - Secondary: yellow-600 (#ca8a04) - money/wealth theme
+  - Accent: sky-600 (#0284c7) - clarity
+  - Background: stone-50 (#fafaf9) - warm neutral
+- **Dark Mode**:
+  - Primary: red-500 - brighter for better visibility
+  - Secondary: yellow-500 - enhanced contrast
+  - Accent: sky-500 - improved readability
+- **Chart Colors**: TYT red, yellow (money), sky blue (voting)
+- **Focus Rings**: TYT red for brand consistency
+**Commit**: 2b98df9 - "feat: Implement TYT Brand-Aligned color palette"
+**Why**: Creates bold, investigative journalism feel aligned with TYT brand (similar to The Guardian, ProPublica)
+
+---
+
 **Report prepared by**: Claude (frontend-ts-expert)
 **Date**: November 4, 2025
