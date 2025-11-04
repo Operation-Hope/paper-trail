@@ -55,6 +55,12 @@ instance/
 .conductor/
 .conductor.json
 
+# Frontend (React + Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.DS_Store
+
 # Created by https://www.toptal.com/developers/gitignore/api/python,macos,windows,powershell,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,windows,powershell,linux
 
