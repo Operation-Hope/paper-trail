@@ -143,9 +143,31 @@ export default function DonationChart({
     ],
   };
 
+  const handleChartClick = (_event: unknown, elements: unknown[]) => {
+    if (!onTopicChange) return;
+
+    const chartElements = elements as Array<{ index: number }>;
+    if (chartElements.length > 0) {
+      const clickedIndex = chartElements[0].index;
+      const clickedIndustry = donations[clickedIndex]?.industry;
+
+      if (clickedIndustry) {
+        // If clicking the currently selected industry, deselect it
+        if (selectedTopic === clickedIndustry) {
+          onTopicChange('');
+        } else {
+          // Find the topic that corresponds to this industry
+          // Note: This is a simple mapping - we could enhance this later
+          onTopicChange(clickedIndustry);
+        }
+      }
+    }
+  };
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
+    onClick: handleChartClick,
     plugins: {
       legend: {
         position: 'bottom' as const,
@@ -201,9 +223,19 @@ export default function DonationChart({
           </div>
         )}
 
-        <div className="max-w-md mx-auto mb-6" role="img" aria-label="Doughnut chart showing donation breakdown by industry">
+        <div
+          className="max-w-md mx-auto mb-2 cursor-pointer"
+          role="img"
+          aria-label="Doughnut chart showing donation breakdown by industry. Click on a segment to filter."
+        >
           <Doughnut data={chartData} options={chartOptions} />
         </div>
+
+        {onTopicChange && (
+          <p className="text-xs text-center text-muted-foreground mb-4">
+            💡 Click on a chart segment to filter by industry
+          </p>
+        )}
 
         <div className="mt-6">
           <h4 className="font-semibold mb-3 text-sm">Total by Industry:</h4>
