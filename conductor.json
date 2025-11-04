@@ -1,5 +1,5 @@
 {
     "scripts": {
-        "setup": "./.claude/conductor-setup.sh"
+        "setup": "./scripts/conductor-setup.sh"
     }
 }
