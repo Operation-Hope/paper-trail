@@ -2,7 +2,7 @@
  * Custom hook for managing politician vote data with pagination and filtering
  * Handles vote loading, pagination state, sorting, and bill type/subject filtering
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import type { VoteResponse, VoteParams } from '../types/api';
 
@@ -30,6 +30,7 @@ export function useVotes(): UseVotesResult {
   const [billType, setBillType] = useState('');
   const [subject, setSubject] = useState('');
   const [politicianId, setPoliticianId] = useState<string | null>(null);
+  const isResettingFilters = useRef(false);
 
   const loadVotes = async (id: string) => {
     // Detect if switching to a different politician
@@ -37,6 +38,8 @@ export function useVotes(): UseVotesResult {
 
     // Reset filters and pagination when switching to a different politician
     if (isNewPolitician) {
+      // Set flag to prevent useEffect from triggering duplicate API call
+      isResettingFilters.current = true;
       setCurrentPage(1);
       setSortOrder('DESC');
       setBillType('');
@@ -75,12 +78,16 @@ export function useVotes(): UseVotesResult {
       setVoteData(null);
     } finally {
       setIsLoading(false);
+      // Clear the flag after API call completes
+      if (isNewPolitician) {
+        isResettingFilters.current = false;
+      }
     }
   };
 
-  // Reload when filters change
+  // Reload when filters change (but not when resetting filters during politician switch)
   useEffect(() => {
-    if (politicianId) {
+    if (politicianId && !isResettingFilters.current) {
       loadVotes(politicianId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
