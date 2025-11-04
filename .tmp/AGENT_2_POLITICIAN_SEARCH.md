@@ -1,9 +1,39 @@
 # Agent 2: Politician Search Specialist
 
 **Agent Type:** `frontend-ts-expert` or `typescript-pro`
-**Duration:** 8-12 hours
-**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete)
-**Can Start:** Immediately after Agent 1 completes Phase 0
+**Duration:** 4-6 hours (REDUCED from 8-12 - shadcn/ui components available)
+**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete) ✅
+**Can Start:** ✅ READY NOW - All dependencies installed
+
+## ⚡ CRITICAL UPDATE: shadcn/ui Components Installed
+
+**Phase 1 delivered MORE than planned!**
+
+Instead of creating components from scratch, you now have **33 production-ready shadcn/ui components** available:
+
+```tsx
+// Import components directly - DO NOT create from scratch
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination'
+```
+
+**This means:**
+- ✅ No need to create Button, Input, Card, Table components
+- ✅ Built-in accessibility (Radix UI primitives)
+- ✅ Built-in animations and interactions
+- ✅ Consistent styling (already configured)
+- ⚡ **50% faster implementation**
+
+**Focus your time on:**
+- Business logic (search, filtering, pagination)
+- API integration
+- Data transformation and state management
+- Component composition (using shadcn components)
 
 ## Overview
 
@@ -419,6 +449,73 @@ Run through ALL verification steps before marking complete:
 - [ ] No console warnings
 - [ ] Browser back/forward buttons work correctly
 - [ ] Page performance is acceptable
+
+### End-to-End Browser Testing (REQUIRED)
+**Use MCP Chrome DevTools to verify the complete politician search flow:**
+
+1. **Ensure Backend and Frontend are Running:**
+   ```bash
+   # Terminal 1: Backend on port 5001
+   source .venv/bin/activate
+   python -m app.main
+
+   # Terminal 2: Frontend on port 5173/5174
+   cd frontend && pnpm run dev
+   ```
+
+2. **Ensure Database is Loaded:**
+   ```bash
+   # If not already loaded:
+   cd bin && tar -xjf sql_data.tar.bz2
+   cd sql && python ../../bin/load_sql.py
+   # Should see: 2600 politicians, 989K votes, 1.75M donations
+   ```
+
+3. **Test Politician Search Flow:**
+   - [ ] Navigate to http://localhost:5173/
+   - [ ] Try searching with 1 character (should show validation message)
+   - [ ] Search with 2+ characters (e.g., "Warren", "Miller", "Smith")
+   - [ ] Verify search results display with:
+     - Party colors (Republican=red, Democratic=blue)
+     - Active/Inactive badges
+     - State and role information
+   - [ ] Click on a politician card to view details
+
+4. **Test Politician Details Page:**
+   - [ ] Verify politician header displays correctly
+   - [ ] Check donation chart section (placeholder for Agent 4 is OK)
+   - [ ] Verify vote record table displays with:
+     - Vote colors (Yea=green, Nay=red, Present=yellow, Not Voting=gray)
+     - Bill numbers, titles, dates, subjects
+     - Proper date formatting (e.g., "Dec 16, 2024")
+
+5. **Test Vote Filtering and Pagination:**
+   - [ ] Click page 2 button - should load different votes
+   - [ ] Verify pagination shows correct page numbers
+   - [ ] Previous/Next buttons enable/disable correctly
+   - [ ] Test bill type checkboxes (HR, S)
+   - [ ] Test subject dropdown - should load 100+ subjects
+   - [ ] Test sort order toggle (Newest First / Oldest First)
+   - [ ] Click a subject tag - should filter votes by that subject
+   - [ ] Test Clear All Filters button
+
+6. **Test Navigation:**
+   - [ ] Click "Back to Search" - should return to search results
+   - [ ] Verify search results are preserved
+   - [ ] Test browser back button
+   - [ ] Check console for errors (should be none)
+
+**Politicians with Good Test Data:**
+- "Warren" - Returns 4 politicians, but Elizabeth Warren has 0 votes
+- "Miller" - Returns 13 politicians, Gary G. Miller has 1,999 votes
+- "Smith" - Returns many results with varying vote counts
+
+**Why This Testing is Critical:**
+- Found and fixed Select component bug during testing (empty value error)
+- Pagination logic only verifiable in browser
+- Vote color coding must be visually confirmed
+- API response handling errors only show at runtime
+- Subject tag click-to-filter functionality requires interaction testing
 
 ---
 

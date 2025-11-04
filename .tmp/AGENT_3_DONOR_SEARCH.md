@@ -1,9 +1,30 @@
 # Agent 3: Donor Search Specialist
 
 **Agent Type:** `frontend-ts-expert` or `react-specialist`
-**Duration:** 4-6 hours
-**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete)
-**Can Start:** Immediately after Agent 1 completes Phase 0 (PARALLEL with Agent 2)
+**Duration:** 2-3 hours (REDUCED from 4-6 - shadcn/ui components available)
+**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete) ✅
+**Can Start:** ✅ READY NOW - All dependencies installed (can run PARALLEL with Agent 2)
+
+## ⚡ CRITICAL UPDATE: shadcn/ui Components Installed
+
+**Phase 1 delivered MORE than planned!**
+
+You have **33 production-ready shadcn/ui components** available. DO NOT create UI components from scratch:
+
+```tsx
+// Import components directly
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+```
+
+**This means:**
+- ✅ No need to create DonorCard, ContributionHistory table from scratch
+- ✅ Use shadcn Card for donor cards
+- ✅ Use shadcn Table for contribution history
+- ⚡ **50% faster implementation** - focus on business logic
 
 ## Overview
 
@@ -368,6 +389,44 @@ Run through ALL verification steps before marking complete:
 - [ ] Donors with no donations handled
 - [ ] Very long donor names handled
 - [ ] Large donation amounts formatted correctly
+
+### Browser Testing (REQUIRED)
+**Use MCP Chrome DevTools to verify the application works end-to-end:**
+
+1. **Ensure Backend and Frontend are Running:**
+   ```bash
+   # Backend should be on port 5001
+   # Frontend should be on port 5173 or 5174
+   ```
+
+2. **Test Donor Search in Browser:**
+   - [ ] Navigate to http://localhost:5173/donor_search
+   - [ ] Try searching with 1-2 characters (should not search yet)
+   - [ ] Search with 3+ characters (e.g., "Google", "Smith")
+   - [ ] Verify search results display correctly
+   - [ ] Click on a donor card to view details
+   - [ ] Verify donor details page displays:
+     - Donor information (name, type, employer, state)
+     - Contribution history table
+     - Currency formatting ($X,XXX.XX)
+     - Date formatting
+   - [ ] Test back button to return to search
+   - [ ] Verify search results are preserved
+   - [ ] Check for console errors (should be none)
+   - [ ] Take screenshots of working pages
+
+**Example Search Queries to Test:**
+- "Google" - Should find Google LLC and employees
+- "Smith" - Should find many individuals
+- "PAC" - Should find PACs
+- Test with donors who have many donations
+- Test with donors who have no donations
+
+**Why Browser Testing is Critical:**
+- Currency and date formatting only visible in browser
+- API response handling bugs only show at runtime
+- Layout issues invisible to TypeScript compiler
+- User interaction flows must be manually verified
 
 ---
 

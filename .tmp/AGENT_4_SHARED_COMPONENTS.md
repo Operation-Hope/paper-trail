@@ -1,13 +1,33 @@
 # Agent 4: Shared Components & Visualization Specialist
 
 **Agent Type:** `frontend-ts-expert` with Chart.js experience
-**Duration:** 4-6 hours
-**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete)
-**Can Start:** Immediately after Agent 1 completes Phase 0 (PARALLEL with Agents 2 & 3)
+**Duration:** 2-3 hours (REDUCED from 4-6 - role significantly changed)
+**Dependencies:** CHECKPOINT 1 passed (Agent 1 complete) ✅
+**Can Start:** ✅ READY NOW (can run PARALLEL with Agents 2 & 3)
+
+## 🚨 MAJOR ROLE CHANGE: Focus on Composition, Not Creation
+
+**Phase 1 delivered shadcn/ui - Your role has fundamentally changed!**
+
+### ❌ DO NOT Create These (Already Exist in shadcn/ui):
+- ~~Header component from scratch~~
+- ~~Button component~~
+- ~~Input component~~
+- ~~Card component~~
+- ~~LoadingSpinner component~~
+- ~~Any basic UI primitives~~
+
+### ✅ DO Create These (Your New Focus):
+
+1. **Header** - COMPOSE using shadcn components (NavigationMenu, etc.)
+2. **DonationChart** - Chart.js integration (unique, not provided by shadcn)
+3. **Page Layouts** - Layout wrappers and containers
+4. **Theme Toggle** - Use existing theme-provider.tsx
+5. **Business Logic Hooks** - useDebounce, useLocalStorage, etc.
 
 ## Overview
 
-Build shared components used across the application and implement the critical DonationChart component with Chart.js integration. These components will be imported by Agents 2 and 3.
+Create COMPOSITION components and business logic that leverage the installed shadcn/ui component library. Your work focuses on unique functionality that shadcn doesn't provide.
 
 **Critical:** The DonationChart component MUST properly register Chart.js components for React 19 compatibility.
 
@@ -557,6 +577,61 @@ Run through ALL verification steps before marking complete:
 - [ ] Can be imported by other components
 - [ ] TypeScript types exported where needed
 - [ ] Documentation clear for other agents
+
+### Browser Testing (REQUIRED)
+**Use MCP Chrome DevTools to verify all shared components work correctly:**
+
+1. **Ensure Backend and Frontend are Running:**
+   ```bash
+   # Backend should be on port 5001
+   # Frontend should be on port 5173 or 5174
+   ```
+
+2. **Test Header Component:**
+   - [ ] Navigate to http://localhost:5173/
+   - [ ] Verify header appears at top of page
+   - [ ] Click "Politician Search" link - should navigate to /
+   - [ ] Click "Donor Search" link - should navigate to /donor_search
+   - [ ] Click "Feedback" link - should navigate to /feedback
+   - [ ] Verify active link is highlighted correctly on each page
+   - [ ] Check disclaimer text is visible and properly styled
+   - [ ] Test on different screen sizes (responsive)
+
+3. **Test DonationChart Component:**
+   - [ ] Navigate to politician search and select a politician with donations
+   - [ ] Verify donation chart loads and displays correctly
+   - [ ] Check Chart.js console for errors (should be none)
+   - [ ] Verify chart legend shows industries
+   - [ ] Hover over chart sections - tooltips should show
+   - [ ] If topic filtering implemented, test all topics
+   - [ ] Test with politician who has no donations (should show message)
+   - [ ] Verify chart is responsive on different screen sizes
+
+4. **Test LoadingSpinner Component:**
+   - [ ] Should appear during API calls (search, loading donations, etc.)
+   - [ ] Verify animation is smooth and centered
+   - [ ] Check optional message displays if provided
+   - [ ] Test different size variants if implemented
+
+5. **Test Feedback Page:**
+   - [ ] Navigate to http://localhost:5173/feedback
+   - [ ] Verify page renders with header
+   - [ ] Content displays correctly
+   - [ ] Navigation works from header
+   - [ ] Take screenshot
+
+**Critical Chart.js Checks:**
+- [ ] NO console errors about Chart.js registration
+- [ ] Chart renders on first load (not blank)
+- [ ] Chart updates when data changes
+- [ ] No memory leaks (chart destroys on unmount)
+
+**Why Browser Testing is Critical for Shared Components:**
+- Chart.js registration errors only show in browser console
+- Navigation highlighting depends on React Router state
+- Responsive design must be visually verified
+- Animation smoothness can't be tested by compiler
+- Other agents depend on these components working perfectly
 
 ---
 
