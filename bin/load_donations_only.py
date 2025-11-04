@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Load only donations and donors SQL files to avoid duplicate key errors.
+"""
 import psycopg2
 import logging
 import os
@@ -8,23 +12,23 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 from app.config import conn_params
 
-
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-
 def load_sql_files(db_config, folder_path, schema="pt"):
-    """Simple function to load all SQL files in a directory"""
-
-    sql_files = sorted(Path(folder_path).glob("*.sql"))
-    logger.info(f"Found {len(sql_files)} SQL files")
+    """Load specific SQL files (donations and donors only)"""
+    
+    # Only load donations and donors files
+    sql_files = sorted(Path(folder_path).glob("*donations*.sql")) + \
+                sorted(Path(folder_path).glob("*donors*.sql"))
+    
+    logger.info(f"Found {len(sql_files)} SQL files to load")
 
     try:
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
-
         cursor.execute(f"SET search_path TO {schema}, public;")
         cursor.execute("SET session_replication_role = 'replica';")
         conn.commit()
@@ -44,17 +48,9 @@ def load_sql_files(db_config, folder_path, schema="pt"):
         conn.commit()
         logger.info("Re-enabled foreign keys")
 
-        # Count records in each table to verify load
+        # Count records to verify load
         logger.info("Counting records in tables...")
-        tables = [
-            "politicians",
-            "bills",
-            "donors",
-            "donations",
-            "votes",
-            "fec_politician_map",
-        ]
-        for table in tables:
+        for table in ["donors", "donations"]:
             cursor.execute(f"SELECT COUNT(*) FROM {table}")
             count = cursor.fetchone()[0]
             logger.info(f"  {table}: {count} records")
@@ -65,16 +61,12 @@ def load_sql_files(db_config, folder_path, schema="pt"):
 
     except Exception as e:
         logger.error(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
         if "conn" in locals():
             conn.rollback()
             conn.close()
 
-
-def main():
-    # Check if sql/ subdirectory exists, otherwise use current directory
-    sql_folder = "./sql" if os.path.exists("./sql") else "./"
-    load_sql_files(conn_params, sql_folder, schema="pt")
-
-
 if __name__ == "__main__":
-    main()
+    sql_folder = "./sql"
+    load_sql_files(conn_params, sql_folder, schema="pt")

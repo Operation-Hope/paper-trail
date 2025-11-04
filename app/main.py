@@ -2,10 +2,12 @@ import psycopg2
 import psycopg2.extras
 import os
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 from app import config
 
 
 app = Flask(__name__)
+CORS(app)
 
 # --- TOPIC TO INDUSTRY MAPPING ---
 TOPIC_INDUSTRY_MAP = {
@@ -135,8 +137,6 @@ def get_donor_contributions(donor_id):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # Join donations with politicians to get the recipient's info
-        # Using lowercase table names 'donations' and 'politicians'
-        # based on your other routes
         sql = """
             SELECT 
                 t.Amount, 
@@ -279,8 +279,7 @@ def get_donation_summary(politician_id):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        # --- CORRECTED: Use lowercase 'donations' table name ---
-        # Assuming 'donors' table name is also lowercase
+        # Use lowercase table names (matching votes query and confirmed working)
         sql = """
             SELECT d.Industry, SUM(t.Amount) AS TotalAmount
             FROM donations t
@@ -291,20 +290,52 @@ def get_donation_summary(politician_id):
             ORDER BY TotalAmount DESC;
         """
 
-        cur.execute(sql, (politician_id,))
+        # Convert politician_id to int if it's a string
+        politician_id_int = int(politician_id) if isinstance(politician_id, str) else politician_id
+        
+        # Debug: Check if donations exist for this politician (using lowercase table name)
+        check_sql = "SELECT COUNT(*) FROM donations WHERE PoliticianID = %s;"
+        cur.execute(check_sql, (politician_id_int,))
+        donation_count = cur.fetchone()[0]
+        print(f"DEBUG: Total donations for politician_id {politician_id_int}: {donation_count}")
+        
+        # Debug: Check if donors have Industry set (using lowercase table names)
+        check_industry_sql = """
+            SELECT COUNT(*) FROM donations t
+            JOIN donors d ON t.DonorID = d.DonorID
+            WHERE t.PoliticianID = %s AND d.Industry IS NOT NULL;
+        """
+        cur.execute(check_industry_sql, (politician_id_int,))
+        industry_count = cur.fetchone()[0]
+        print(f"DEBUG: Donations with Industry set: {industry_count}")
+        
+        # Execute the query
+        cur.execute(sql, (politician_id_int,))
         summary_data = cur.fetchall()
+        
+        print(f"DEBUG: Query returned {len(summary_data)} rows for politician_id {politician_id_int}")
+        if len(summary_data) > 0:
+            print(f"DEBUG: First row: {summary_data[0]}")
+        else:
+            print(f"DEBUG: No rows returned - this politician has no donation data in the database")
 
-        summary_list = [
-            # Assuming Industry and Amount column names are correct
-            {"industry": row['industry'] or 'Other', "totalamount": float(row['totalamount'])}
-            for row in summary_data
-        ]
+        summary_list = []
+        for row in summary_data:
+            # Handle both lowercase and uppercase column names from PostgreSQL
+            industry = row.get('industry') or row.get('Industry') or 'Other'
+            totalamount = float(row.get('totalamount') or row.get('TotalAmount') or 0)
+            summary_list.append({
+                "industry": industry,
+                "totalamount": totalamount
+            })
 
         cur.close()
         return jsonify(summary_list)
 
     except (Exception, psycopg2.Error) as e:
         print(f"Error fetching donation summary: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
     finally:
         if conn:
@@ -326,8 +357,7 @@ def get_filtered_donation_summary(politician_id):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        # --- CORRECTED: Use lowercase 'donations' table name ---
-        # Assuming 'donors' table name is also lowercase
+        # Use lowercase table names to match how PostgreSQL stores them
         sql = """
             SELECT d.Industry, SUM(t.Amount) AS TotalAmount
             FROM donations t
@@ -339,7 +369,9 @@ def get_filtered_donation_summary(politician_id):
             ORDER BY TotalAmount DESC;
         """
 
-        cur.execute(sql, (politician_id, industries))
+        # Convert politician_id to int if it's a string
+        politician_id_int = int(politician_id) if isinstance(politician_id, str) else politician_id
+        cur.execute(sql, (politician_id_int, industries))
         summary_data = cur.fetchall()
 
         summary_list = [

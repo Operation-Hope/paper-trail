@@ -19,6 +19,7 @@ interface DonationChartProps {
   politicianId: string;
   selectedTopic?: string;
   onTopicChange?: (topic: string) => void;
+  onTitleClick?: () => void;
 }
 
 const COLORS = [
@@ -50,6 +51,7 @@ export default function DonationChart({
   politicianId,
   selectedTopic,
   onTopicChange,
+  onTitleClick,
 }: DonationChartProps) {
   const [donations, setDonations] = useState<DonationSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -157,10 +159,20 @@ export default function DonationChart({
     },
   };
 
+  const titleText = selectedTopic
+    ? `Donation Summary (Filtered by: ${selectedTopic})`
+    : 'Donation Summary';
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Donations by Industry</CardTitle>
+        <CardTitle
+          className={`text-xl ${onTitleClick ? 'cursor-pointer hover:opacity-70' : ''}`}
+          onClick={onTitleClick}
+          title={onTitleClick ? 'Click to show all donors' : undefined}
+        >
+          {titleText}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {onTopicChange && (
@@ -168,12 +180,12 @@ export default function DonationChart({
             <label htmlFor="topic-filter" className="block mb-2 text-sm font-medium">
               Filter by Topic:
             </label>
-            <Select value={selectedTopic || ''} onValueChange={onTopicChange}>
+            <Select value={selectedTopic || 'all'} onValueChange={(value) => onTopicChange(value === 'all' ? '' : value)}>
               <SelectTrigger id="topic-filter" className="w-full md:w-64" aria-label="Filter donations by topic">
                 <SelectValue placeholder="All Industries" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Industries</SelectItem>
+                <SelectItem value="all">All Industries</SelectItem>
                 {TOPICS.map((topic) => (
                   <SelectItem key={topic} value={topic}>
                     {topic}
