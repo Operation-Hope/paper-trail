@@ -7,10 +7,23 @@ import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   return (
-    <header className="bg-blue-600 dark:bg-gray-900 text-white shadow-md transition-colors">
+    <header className="bg-gradient-to-r from-red-600 to-red-700 dark:from-gray-900 dark:to-gray-800 text-white shadow-lg transition-colors">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Paper Trail</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/The_Young_Turks_logo.svg/200px-The_Young_Turks_logo.svg.png"
+              alt="TYT Logo"
+              className="h-10 w-10"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div>
+              <h1 className="text-2xl font-bold">Paper Trail</h1>
+              <p className="text-xs text-red-100 dark:text-gray-400">by The Young Turks</p>
+            </div>
+          </div>
           <div className="flex items-center gap-6">
             <nav className="flex gap-6">
               <NavLink
@@ -21,7 +34,7 @@ export default function Header() {
                     : 'hover:underline underline-offset-4'
                 }
               >
-                Politician Search
+                Politicians
               </NavLink>
               <NavLink
                 to="/donor_search"
@@ -31,7 +44,7 @@ export default function Header() {
                     : 'hover:underline underline-offset-4'
                 }
               >
-                Donor Search
+                Donors
               </NavLink>
               <NavLink
                 to="/feedback"
@@ -48,7 +61,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="bg-blue-500 dark:bg-gray-800 px-4 py-2 transition-colors">
+      <div className="bg-red-500 dark:bg-gray-800 px-4 py-2 transition-colors">
         <p className="text-sm text-center text-white">
           Disclaimer: This data is for informational purposes only.
           Data accuracy is not guaranteed. Please verify all information
