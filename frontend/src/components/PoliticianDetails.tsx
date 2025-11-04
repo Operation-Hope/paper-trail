@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { VoteRecord } from './VoteRecord';
 import DonationChart from './DonationChart';
 import type { Politician } from '../types/api';
@@ -24,6 +25,16 @@ export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProp
     return 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
+  const getAvatarColor = (party: string): string => {
+    if (party === 'Republican') return 'bg-red-500 text-white';
+    if (party === 'Democratic') return 'bg-blue-500 text-white';
+    return 'bg-gray-500 text-white';
+  };
+
+  const getInitials = (firstname: string, lastname: string): string => {
+    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
+  };
+
   const handleSubjectClick = (subject: string | null) => {
     setSelectedSubjectForDonations(subject);
   };
@@ -40,11 +51,18 @@ export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProp
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-3xl font-bold">
-                  {politician.firstname} {politician.lastname}
-                </h1>
+            <div className="flex items-center gap-4 flex-1">
+              <Avatar className={`size-20 ${getAvatarColor(politician.party)}`}>
+                <AvatarFallback className={`text-2xl ${getAvatarColor(politician.party)}`}>
+                  {getInitials(politician.firstname, politician.lastname)}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <h1 className="text-3xl font-bold">
+                    {politician.firstname} {politician.lastname}
+                  </h1>
                 {!politician.isactive && (
                   <Badge variant="secondary">Inactive</Badge>
                 )}
@@ -63,6 +81,7 @@ export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProp
                 )}
               </div>
             </div>
+          </div>
             <Button onClick={onClose} variant="outline">
               Back to Search
             </Button>
