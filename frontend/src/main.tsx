@@ -11,7 +11,7 @@ function Root() {
   }, [])
 
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <App />
     </ThemeProvider>
   )

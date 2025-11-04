@@ -12,7 +12,9 @@ export function ThemeProvider({ defaultTheme = "dark", children }:{
     return saved ?? defaultTheme
   })
   React.useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme)
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(theme)
     localStorage.setItem("theme", theme)
   }, [theme])
   return <ThemeCtx.Provider value={{ theme, setTheme }}>{children}</ThemeCtx.Provider>
