@@ -9,6 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { X, Info } from 'lucide-react';
 import { api } from '../services/api';
 import type { Vote } from '../types/api';
 
@@ -109,6 +112,30 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
 
   return (
     <div className="space-y-6">
+      {/* Active Subject Filter Alert */}
+      {selectedSubjectForDonations && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-900">
+            Filtering donations by: {selectedSubjectForDonations}
+          </AlertTitle>
+          <AlertDescription className="text-blue-700 flex items-center justify-between">
+            <span>
+              Click on subject tags below to explore different topics, or clear the filter to see all donations.
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 h-6 px-2 text-blue-600 hover:text-blue-900 hover:bg-blue-100"
+              onClick={() => onSubjectClick && onSubjectClick(null)}
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear filter
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Voting Record</CardTitle>
@@ -174,30 +201,42 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
                           {formatDate(vote.DateIntroduced)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {vote.subjects.slice(0, 3).map((subj, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="outline"
-                                className={`cursor-pointer hover:bg-gray-100 ${
-                                  selectedSubjectForDonations === subj
-                                    ? 'bg-red-100 border-red-500 text-red-800 font-semibold'
-                                    : ''
-                                }`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSubjectClick(subj);
-                                }}
-                              >
-                                {subj}
-                              </Badge>
-                            ))}
-                            {vote.subjects.length > 3 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{vote.subjects.length - 3}
-                              </Badge>
-                            )}
-                          </div>
+                          <TooltipProvider>
+                            <div className="flex flex-wrap gap-1">
+                              {vote.subjects.slice(0, 3).map((subj, idx) => (
+                                <Tooltip key={idx}>
+                                  <TooltipTrigger asChild>
+                                    <Badge
+                                      variant="outline"
+                                      className={`cursor-pointer transition-all duration-200 ${
+                                        selectedSubjectForDonations === subj
+                                          ? 'bg-red-100 border-red-500 text-red-800 font-semibold shadow-sm'
+                                          : 'hover:bg-blue-50 hover:border-blue-400 hover:scale-105 hover:shadow-sm'
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSubjectClick(subj);
+                                      }}
+                                    >
+                                      {subj}
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>
+                                      {selectedSubjectForDonations === subj
+                                        ? 'Click to clear filter'
+                                        : 'Click to filter donations by this subject'}
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                              {vote.subjects.length > 3 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{vote.subjects.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </TooltipProvider>
                         </TableCell>
                       </TableRow>
                     ))}
