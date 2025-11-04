@@ -11,10 +11,10 @@ export default function Feedback() {
         <CardTitle className="text-3xl">Feedback</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-600 mb-4">
+        <p className="text-muted-foreground mb-4">
           We value your feedback and suggestions!
         </p>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           This feedback form is currently under development. For now, please contact
           us directly with any questions, comments, or suggestions about Paper Trail.
         </p>

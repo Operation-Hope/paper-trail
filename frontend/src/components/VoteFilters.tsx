@@ -78,8 +78,8 @@ export function VoteFilters({
   };
 
   return (
-    <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
-      <h3 className="font-semibold text-sm text-gray-700">Filter Votes</h3>
+    <div className="space-y-4 p-4 bg-muted rounded-lg border">
+      <h3 className="font-semibold text-sm text-muted-foreground">Filter Votes</h3>
 
       {/* Bill Type Filter */}
       <div className="space-y-2">
@@ -109,11 +109,11 @@ export function VoteFilters({
       <div className="space-y-2">
         <Label className="text-sm font-medium">Bill Subjects</Label>
         {isLoadingSubjects ? (
-          <div className="text-sm text-gray-500">Loading subjects...</div>
+          <div className="text-sm text-muted-foreground">Loading subjects...</div>
         ) : (
-          <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1">
+          <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1 bg-background">
             {availableSubjects.length === 0 ? (
-              <div className="text-sm text-gray-500">No subjects available</div>
+              <div className="text-sm text-muted-foreground">No subjects available</div>
             ) : (
               availableSubjects.map((subj) => (
                 <div key={subj} className="flex items-center gap-2">

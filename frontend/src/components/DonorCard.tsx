@@ -26,18 +26,18 @@ export function DonorCard({ donor, onSelect }: DonorCardProps) {
     <Card
       role="button"
       tabIndex={0}
-      className="cursor-pointer transition-all hover:shadow-md hover:border-gray-400 focus:ring-2 focus:ring-red-600 focus:outline-none"
+      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 focus:ring-2 focus:ring-ring focus:outline-none"
       onClick={() => onSelect(donor)}
       onKeyDown={handleKeyDown}
     >
       <CardContent className="pt-6">
         <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold text-red-600">
+          <h3 className="text-lg font-semibold text-primary">
             {donor.name}
           </h3>
 
           <div className="flex flex-col gap-1">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {donor.donortype}
               {donor.employer && ` - ${donor.employer}`}
             </p>

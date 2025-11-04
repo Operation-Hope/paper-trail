@@ -21,16 +21,16 @@ export function DonorDetails({ donor, onClose }: DonorDetailsProps) {
         <Button
           variant="link"
           onClick={onClose}
-          className="mb-4 p-0 text-red-600 hover:text-red-700"
+          className="mb-4 p-0 text-primary hover:text-primary/80"
         >
           ← Back to search results
         </Button>
 
-        <div className="text-center border-b border-gray-200 pb-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="text-center border-b border-border pb-4">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
             {donor.name}
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             {donor.donortype}
           </p>
           {donor.employer && (

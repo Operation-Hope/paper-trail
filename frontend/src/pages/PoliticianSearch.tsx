@@ -56,7 +56,7 @@ export default function PoliticianSearch() {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-2xl">Search Politicians</CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Find politicians and explore their voting records and campaign donations
           </p>
         </CardHeader>
@@ -96,7 +96,7 @@ export default function PoliticianSearch() {
       {isLoading ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-muted-foreground">
               Searching for politicians...
             </div>
           </CardContent>
@@ -119,7 +119,7 @@ export default function PoliticianSearch() {
       ) : query.length >= 2 && !isLoading && !error ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-muted-foreground">
               No politicians found matching "{query}"
             </div>
           </CardContent>

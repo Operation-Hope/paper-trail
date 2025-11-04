@@ -20,7 +20,7 @@ export function PoliticianCard({ politician, onSelect }: PoliticianCardProps) {
 
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-md hover:border-gray-400"
+      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
       onClick={() => onSelect(politician)}
     >
       <CardContent className="pt-6">

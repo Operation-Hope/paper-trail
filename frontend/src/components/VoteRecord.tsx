@@ -157,13 +157,13 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
       {isLoading ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">Loading votes...</div>
+            <div className="text-center py-8 text-muted-foreground">Loading votes...</div>
           </CardContent>
         </Card>
       ) : !voteData || voteData.votes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-muted-foreground">
               No votes found with the current filters.
             </div>
           </CardContent>
@@ -197,7 +197,7 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
                         <TableCell className="max-w-md">
                           <div className="line-clamp-2">{vote.Title}</div>
                         </TableCell>
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell className="text-sm text-muted-foreground">
                           {formatDate(vote.DateIntroduced)}
                         </TableCell>
                         <TableCell>
@@ -251,7 +251,7 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     Page {voteData.pagination.currentPage} of{' '}
                     {voteData.pagination.totalPages} ({voteData.pagination.totalVotes}{' '}
                     votes)

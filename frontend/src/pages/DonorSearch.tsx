@@ -65,7 +65,7 @@ export default function DonorSearch() {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-2xl">Search for a Donor (PAC or Individual)</CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Find donors and explore their contribution history to politicians
           </p>
         </CardHeader>
@@ -105,7 +105,7 @@ export default function DonorSearch() {
       {isSearching ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-muted-foreground">
               Searching for donors...
             </div>
           </CardContent>
@@ -128,7 +128,7 @@ export default function DonorSearch() {
       ) : query.length >= 3 && !isSearching && !searchError ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-gray-600">
+            <div className="text-center py-8 text-muted-foreground">
               No donors found matching "{query}"
             </div>
           </CardContent>

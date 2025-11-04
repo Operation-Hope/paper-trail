@@ -119,7 +119,7 @@ export default function DonationChart({
     return (
       <Card>
         <CardContent className="pt-6">
-          <div className="text-gray-600 text-center py-8">
+          <div className="text-muted-foreground text-center py-8">
             No donation data available
           </div>
         </CardContent>
