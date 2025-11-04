@@ -635,11 +635,12 @@ Instead of showing everything at once:
 5. ✅ **Politician avatars** - Humanize the data
 
 ### MEDIUM PRIORITY
-1. ⏳ **Command palette** - ⌘K search
-2. ⏳ **Export features** - CSV, PNG downloads
-3. ⏳ **Enhanced donor cards** - Show totals, date ranges
-4. ⏳ **Comparison mode** - Side-by-side politicians
-5. ⏳ **Timeline views** - Donations over time
+1. ✅ **Command palette** - ⌘K search (Completed - commit 3f5dcf8)
+2. ✅ **Comparison mode** - Side-by-side politicians (Completed - commit f43011a)
+3. 🔮 **Enhanced donor cards** - Show totals, date ranges (Requires backend API for aggregated donor stats)
+4. 🔮 **Timeline views** - Donations over time (Requires backend API for time-series donation data)
+
+_Note: Export features (CSV, PNG downloads) removed from plan per user request_
 
 ### LOW PRIORITY (Future)
 1. 💡 **Network graph** - Relationship visualization
