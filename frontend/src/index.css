@@ -43,71 +43,73 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  /* TYT Brand-Aligned Color Palette */
+  --background: oklch(0.98 0.002 85);        /* stone-50 #fafaf9 */
+  --foreground: oklch(0.197 0.006 30);       /* stone-900 #1c1917 */
+  --card: oklch(1 0 0);                      /* white #ffffff */
+  --card-foreground: oklch(0.197 0.006 30);  /* stone-900 #1c1917 */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.197 0.006 30);
+  --primary: oklch(0.577 0.245 27.325);      /* red-600 #dc2626 - TYT brand, passion */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --secondary: oklch(0.647 0.167 75.347);    /* yellow-600 #ca8a04 - money, wealth */
+  --secondary-foreground: oklch(0.197 0.006 30);
+  --muted: oklch(0.961 0.003 85);            /* stone-100 */
+  --muted-foreground: oklch(0.556 0.006 30); /* stone-600 */
+  --accent: oklch(0.603 0.151 237.327);      /* sky-600 #0284c7 - clarity */
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.577 0.245 27.325);  /* red-600 */
+  --border: oklch(0.922 0.003 85);           /* stone-200 */
+  --input: oklch(0.922 0.003 85);
+  --ring: oklch(0.577 0.245 27.325);         /* red-600 for focus rings */
+  --chart-1: oklch(0.577 0.245 27.325);      /* red-600 - primary TYT color */
+  --chart-2: oklch(0.647 0.167 75.347);      /* yellow-600 - money theme */
+  --chart-3: oklch(0.603 0.151 237.327);     /* sky-600 - clarity */
+  --chart-4: oklch(0.828 0.189 84.429);      /* warm complement */
+  --chart-5: oklch(0.769 0.188 70.08);       /* warm accent */
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.197 0.006 30);
+  --sidebar-primary: oklch(0.577 0.245 27.325);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.961 0.003 85);
+  --sidebar-accent-foreground: oklch(0.197 0.006 30);
+  --sidebar-border: oklch(0.922 0.003 85);
+  --sidebar-ring: oklch(0.577 0.245 27.325);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  /* TYT Brand-Aligned Dark Mode */
+  --background: oklch(0.145 0 0);              /* dark gray-900 */
+  --foreground: oklch(0.985 0 0);              /* near white */
+  --card: oklch(0.205 0 0);                    /* dark gray-800 */
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --primary: oklch(0.704 0.191 22.216);        /* red-500 - brighter red for dark mode */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.784 0.156 79.463);      /* yellow-500 - brighter yellow for dark mode */
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.269 0 0);                   /* gray-700 */
+  --muted-foreground: oklch(0.708 0 0);        /* gray-400 */
+  --accent: oklch(0.697 0.143 241.086);        /* sky-500 - brighter sky for dark mode */
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.704 0.191 22.216);    /* red-500 */
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --ring: oklch(0.704 0.191 22.216);           /* red-500 for focus rings */
+  --chart-1: oklch(0.704 0.191 22.216);        /* red-500 - primary TYT color */
+  --chart-2: oklch(0.784 0.156 79.463);        /* yellow-500 - money theme */
+  --chart-3: oklch(0.697 0.143 241.086);       /* sky-500 - clarity */
+  --chart-4: oklch(0.828 0.189 84.429);        /* warm complement */
+  --chart-5: oklch(0.769 0.188 70.08);         /* warm accent */
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: oklch(0.704 0.191 22.216);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.704 0.191 22.216);
 }
 
 @layer base {
