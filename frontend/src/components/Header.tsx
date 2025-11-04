@@ -7,7 +7,7 @@ import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   return (
-    <header className="bg-gradient-to-r from-red-600 to-red-700 dark:from-gray-900 dark:to-gray-800 text-white shadow-lg transition-colors">
+    <header className="bg-gradient-to-r from-blue-900 to-blue-950 dark:from-gray-900 dark:to-gray-800 text-white shadow-lg transition-colors">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -21,7 +21,7 @@ export default function Header() {
             />
             <div>
               <h1 className="text-2xl font-bold">Paper Trail</h1>
-              <p className="text-xs text-red-100 dark:text-gray-400">by The Young Turks</p>
+              <p className="text-xs text-blue-100 dark:text-gray-400">by The People</p>
             </div>
           </div>
           <div className="flex items-center gap-6">
@@ -76,8 +76,8 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="bg-red-500 dark:bg-gray-800 px-4 py-2 transition-colors">
-        <p className="text-sm text-center text-white">
+      <div className="bg-yellow-900/50 dark:bg-yellow-900/50 border-t border-yellow-700 dark:border-yellow-700 px-4 py-2 transition-colors">
+        <p className="text-sm text-center text-yellow-300 dark:text-yellow-300">
           Disclaimer: This data is for informational purposes only.
           Data accuracy is not guaranteed. Please verify all information
           with official sources.
