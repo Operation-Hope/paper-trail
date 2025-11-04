@@ -807,23 +807,42 @@ All screenshots saved to `.tmp/` directory:
 #### ✅ 1. Restore 2-column layout on politician detail page
 **Status**: Completed - 2025-11-04
 **Implementation**: Modified `PoliticianDetails.tsx` to use `grid grid-cols-1 lg:grid-cols-2 gap-6` for side-by-side layout on desktop, stacked on mobile.
-**Commit**: [pending]
+**Commit**: 771fca3 - "fix: Restore 2-column layout on politician detail page"
 
-#### 🔄 2. Subject tag filtering discoverability
-**Status**: In Progress
-**Plan**: Add visual enhancements to make subject filtering more obvious (tooltips, hover effects, pulsing animation on first load)
+#### ✅ 2. Subject tag filtering discoverability
+**Status**: Completed - 2025-11-04
+**Implementation**:
+- Added tooltips to subject badges with contextual messages
+- Implemented smooth hover effects (scale, color transitions)
+- Added prominent blue alert banner when filter is active
+- Added "Clear filter" button for easy deactivation
+- Enhanced visual feedback with blue hover states and red active states
+**Commit**: 50b13c4 - "feat: Enhance subject tag filtering discoverability"
 
-#### 🔄 3. Theme toggle - Dark/light mode support
-**Status**: In Progress
-**Plan**: Implement theme provider with localStorage persistence, add toggle button to header
+#### ✅ 3. Theme toggle - Dark/light mode support
+**Status**: Completed - 2025-11-04
+**Implementation**:
+- Created ThemeToggle component with Moon/Sun icons
+- Updated ThemeProvider to use CSS classes (dark/light)
+- Changed default theme from dark to light per UX recommendations
+- Added theme toggle to header navigation
+- Implemented dark mode styles with smooth transitions
+- Theme preference persisted in localStorage
+**Commit**: 5ade539 - "feat: Add theme toggle with dark/light mode support"
 
-#### 🔄 4. TYT branding - Add logo back
-**Status**: In Progress
-**Plan**: Add TYT logo to header, update header styling to match brand colors
+#### ✅ 4. TYT branding - Add logo back
+**Status**: Completed - 2025-11-04
+**Implementation**:
+- Added TYT logo from Wikimedia Commons with error handling
+- Added "by The Young Turks" subtitle
+- Updated header gradient to TYT brand red (red-600 to red-700)
+- Maintained dark mode support with gray gradient
+- Updated disclaimer background to match theme
+**Commit**: 9b12c57 - "feat: Restore TYT branding to header"
 
 #### ⏳ 5. Accessibility - Full keyboard navigation, ARIA labels
 **Status**: Pending
-**Notes**: React version already has good ARIA labels; will verify and enhance as needed
+**Notes**: React version already has good ARIA labels; will verify and enhance as needed during next phase
 
 ---
 
