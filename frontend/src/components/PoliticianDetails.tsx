@@ -70,20 +70,23 @@ export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProp
         </CardContent>
       </Card>
 
-      {/* Donation Chart Section */}
-      <DonationChart
-        politicianId={politician.politicianid}
-        selectedTopic={selectedSubjectForDonations || undefined}
-        onTopicChange={(topic) => setSelectedSubjectForDonations(topic || null)}
-        onTitleClick={selectedSubjectForDonations ? handleDonationTitleClick : undefined}
-      />
+      {/* Two-column layout: Donation Chart (left) and Vote Record (right) on desktop, stacked on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Donation Chart Section */}
+        <DonationChart
+          politicianId={politician.politicianid}
+          selectedTopic={selectedSubjectForDonations || undefined}
+          onTopicChange={(topic) => setSelectedSubjectForDonations(topic || null)}
+          onTitleClick={selectedSubjectForDonations ? handleDonationTitleClick : undefined}
+        />
 
-      {/* Vote Record Section */}
-      <VoteRecord
-        politicianId={politician.politicianid}
-        selectedSubjectForDonations={selectedSubjectForDonations}
-        onSubjectClick={handleSubjectClick}
-      />
+        {/* Vote Record Section */}
+        <VoteRecord
+          politicianId={politician.politicianid}
+          selectedSubjectForDonations={selectedSubjectForDonations}
+          onSubjectClick={handleSubjectClick}
+        />
+      </div>
     </div>
   );
 }
