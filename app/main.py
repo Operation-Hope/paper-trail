@@ -7,7 +7,11 @@ from app import config
 
 
 app = Flask(__name__)
-CORS(app)
+
+# Enable CORS in development only (security requirement)
+if os.getenv('FLASK_ENV') == 'development':
+    CORS(app)
+    print("CORS enabled for development")
 
 # --- TOPIC TO INDUSTRY MAPPING ---
 TOPIC_INDUSTRY_MAP = {
