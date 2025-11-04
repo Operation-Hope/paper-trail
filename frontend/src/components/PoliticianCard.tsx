@@ -1,18 +1,31 @@
 /**
  * Politician card component for displaying a politician in search results
  * Shows name, party, state, role, and active status with clickable interaction
+ * Supports comparison mode with checkbox selection
  */
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { GitCompare } from 'lucide-react';
 import type { Politician } from '../types/api';
 
 interface PoliticianCardProps {
   politician: Politician;
   onSelect: (politician: Politician) => void;
+  onToggleComparison?: (politician: Politician) => void;
+  isSelectedForComparison?: boolean;
+  comparisonMode?: boolean;
 }
 
-export function PoliticianCard({ politician, onSelect }: PoliticianCardProps) {
+export function PoliticianCard({
+  politician,
+  onSelect,
+  onToggleComparison,
+  isSelectedForComparison = false,
+  comparisonMode = false,
+}: PoliticianCardProps) {
   const getPartyColor = (party: string): string => {
     if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300';
     if (party === 'Democratic') return 'bg-blue-100 text-blue-800 border-blue-300';
@@ -29,13 +42,41 @@ export function PoliticianCard({ politician, onSelect }: PoliticianCardProps) {
     return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
   };
 
+  const handleCardClick = () => {
+    if (comparisonMode && onToggleComparison) {
+      onToggleComparison(politician);
+    } else {
+      onSelect(politician);
+    }
+  };
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleComparison) {
+      onToggleComparison(politician);
+    }
+  };
+
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
-      onClick={() => onSelect(politician)}
+      className={`transition-all hover:shadow-md ${
+        isSelectedForComparison
+          ? 'border-primary border-2 bg-primary/5'
+          : 'hover:border-primary/50 cursor-pointer'
+      }`}
+      onClick={handleCardClick}
     >
       <CardContent className="pt-6">
         <div className="flex gap-3">
+          {comparisonMode && onToggleComparison && (
+            <div className="flex items-start pt-1" onClick={handleCheckboxClick}>
+              <Checkbox
+                checked={isSelectedForComparison}
+                onCheckedChange={() => onToggleComparison(politician)}
+              />
+            </div>
+          )}
+
           <Avatar className={`size-12 ${getAvatarColor(politician.party)}`}>
             <AvatarFallback className={getAvatarColor(politician.party)}>
               {getInitials(politician.firstname, politician.lastname)}
@@ -47,10 +88,10 @@ export function PoliticianCard({ politician, onSelect }: PoliticianCardProps) {
               <h3 className="text-lg font-semibold">
                 {politician.firstname} {politician.lastname}
               </h3>
-            {!politician.isactive && (
-              <Badge variant="secondary" className="text-xs">
-                Inactive
-              </Badge>
+              {!politician.isactive && (
+                <Badge variant="secondary" className="text-xs">
+                  Inactive
+                </Badge>
               )}
             </div>
 
@@ -63,6 +104,21 @@ export function PoliticianCard({ politician, onSelect }: PoliticianCardProps) {
                 <Badge variant="secondary">{politician.role}</Badge>
               )}
             </div>
+
+            {!comparisonMode && onToggleComparison && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2 w-fit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleComparison(politician);
+                }}
+              >
+                <GitCompare className="size-4" />
+                Compare
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

@@ -11,17 +11,22 @@ interface UsePoliticianSearchResult {
   setQuery: (query: string) => void;
   politicians: Politician[];
   selectedPolitician: Politician | null;
+  comparisonPoliticians: Politician[];
+  isComparing: boolean;
   isLoading: boolean;
   error: string | null;
   search: () => Promise<void>;
   selectPolitician: (politician: Politician) => void;
+  toggleComparison: (politician: Politician) => void;
   clearSelection: () => void;
+  clearComparison: () => void;
 }
 
 export function usePoliticianSearch(): UsePoliticianSearchResult {
   const [query, setQuery] = useState('');
   const [politicians, setPoliticians] = useState<Politician[]>([]);
   const [selectedPolitician, setSelectedPolitician] = useState<Politician | null>(null);
+  const [comparisonPoliticians, setComparisonPoliticians] = useState<Politician[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,21 +52,46 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
 
   const selectPolitician = (politician: Politician) => {
     setSelectedPolitician(politician);
+    setComparisonPoliticians([]);
+  };
+
+  const toggleComparison = (politician: Politician) => {
+    setSelectedPolitician(null);
+    setComparisonPoliticians((prev) => {
+      const isSelected = prev.some((p) => p.politicianid === politician.politicianid);
+      if (isSelected) {
+        return prev.filter((p) => p.politicianid !== politician.politicianid);
+      }
+      if (prev.length >= 2) {
+        return [prev[1], politician];
+      }
+      return [...prev, politician];
+    });
   };
 
   const clearSelection = () => {
     setSelectedPolitician(null);
   };
 
+  const clearComparison = () => {
+    setComparisonPoliticians([]);
+  };
+
+  const isComparing = comparisonPoliticians.length === 2;
+
   return {
     query,
     setQuery,
     politicians,
     selectedPolitician,
+    comparisonPoliticians,
+    isComparing,
     isLoading,
     error,
     search,
     selectPolitician,
+    toggleComparison,
     clearSelection,
+    clearComparison,
   };
 }

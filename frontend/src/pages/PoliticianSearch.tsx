@@ -1,16 +1,19 @@
 /**
  * Politician Search page (main landing page)
  * Allows users to search for politicians and view their voting records and donation data
+ * Supports comparison mode for side-by-side politician analysis
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePoliticianSearch } from '../hooks/usePoliticianSearch';
 import { PoliticianCard } from '../components/PoliticianCard';
 import { PoliticianDetails } from '../components/PoliticianDetails';
+import { PoliticianComparison } from '../components/PoliticianComparison';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
-import { Search } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
+import { Search, GitCompare, X } from 'lucide-react';
 import type { Politician } from '../types/api';
 
 export default function PoliticianSearch() {
@@ -19,12 +22,18 @@ export default function PoliticianSearch() {
     setQuery,
     politicians,
     selectedPolitician,
+    comparisonPoliticians,
+    isComparing,
     isLoading,
     error,
     search,
     selectPolitician,
+    toggleComparison,
     clearSelection,
+    clearComparison,
   } = usePoliticianSearch();
+
+  const [comparisonMode, setComparisonMode] = useState(false);
 
   // Listen for politician selection from command palette
   useEffect(() => {
@@ -52,6 +61,30 @@ export default function PoliticianSearch() {
       search();
     }
   };
+
+  const handleToggleComparisonMode = () => {
+    setComparisonMode(!comparisonMode);
+    if (!comparisonMode) {
+      clearComparison();
+    }
+  };
+
+  const handleExitComparison = () => {
+    clearComparison();
+    setComparisonMode(false);
+  };
+
+  // If comparing two politicians, show the comparison view
+  if (isComparing) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <PoliticianComparison
+          politicians={comparisonPoliticians as [Politician, Politician]}
+          onClose={handleExitComparison}
+        />
+      </div>
+    );
+  }
 
   // If a politician is selected, show the details view
   if (selectedPolitician) {
@@ -130,18 +163,58 @@ export default function PoliticianSearch() {
         </div>
       ) : politicians.length > 0 ? (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">
-            Found {politicians.length} politician{politicians.length !== 1 ? 's' : ''}
-          </h2>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <h2 className="text-xl font-semibold">
+              Found {politicians.length} politician{politicians.length !== 1 ? 's' : ''}
+            </h2>
+            <div className="flex items-center gap-2">
+              {comparisonMode && comparisonPoliticians.length > 0 && (
+                <Badge variant="secondary" className="px-3 py-1">
+                  {comparisonPoliticians.length} selected
+                </Badge>
+              )}
+              <Button
+                variant={comparisonMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={handleToggleComparisonMode}
+              >
+                {comparisonMode ? (
+                  <>
+                    <X className="size-4" />
+                    Exit Compare Mode
+                  </>
+                ) : (
+                  <>
+                    <GitCompare className="size-4" />
+                    Compare Mode
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {politicians.map((politician) => (
               <PoliticianCard
                 key={politician.politicianid}
                 politician={politician}
                 onSelect={selectPolitician}
+                onToggleComparison={toggleComparison}
+                isSelectedForComparison={comparisonPoliticians.some(
+                  (p) => p.politicianid === politician.politicianid
+                )}
+                comparisonMode={comparisonMode}
               />
             ))}
           </div>
+          {comparisonMode && comparisonPoliticians.length === 1 && (
+            <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+              <CardContent className="pt-6">
+                <p className="text-sm text-blue-800 dark:text-blue-200 text-center">
+                  Select one more politician to compare
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       ) : query.length >= 2 && !isLoading && !error ? (
         <Card>
