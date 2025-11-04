@@ -865,6 +865,18 @@ All screenshots saved to `.tmp/` directory:
 **Commit**: 2b98df9 - "feat: Implement TYT Brand-Aligned color palette"
 **Why**: Creates bold, investigative journalism feel aligned with TYT brand (similar to The Guardian, ProPublica)
 
+#### ✅ 7. Dark Mode - Remove hardcoded colors
+**Status**: Completed - 2025-11-04
+**Implementation**:
+- Replaced all hardcoded background colors (bg-gray-50, bg-white) with theme-aware classes (bg-background, bg-muted)
+- Replaced all hardcoded text colors (text-gray-600/700/800/900) with theme variables (text-muted-foreground, text-foreground)
+- Updated borders to use theme colors (border-border, border-primary/50)
+- Fixed loading spinners to use primary theme colors
+- Updated 12 files across pages and components
+- Dark mode now properly applies across entire application
+**Commit**: a0a21c6 - "fix: Remove hardcoded colors for proper dark mode support"
+**Why**: Ensures theme toggle actually works - previously most of page remained white in dark mode
+
 ---
 
 **Report prepared by**: Claude (frontend-ts-expert)
