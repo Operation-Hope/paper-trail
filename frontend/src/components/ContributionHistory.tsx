@@ -8,6 +8,7 @@
  * @param threshold - Minimum donation amount threshold (defaults to 2000)
  */
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Skeleton } from './ui/skeleton';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import type { Donation } from '../types/api';
 
@@ -35,9 +36,19 @@ export function ContributionHistory({
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="text-center py-8">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-            <p className="mt-2 text-muted-foreground">Loading contribution history...</p>
+          <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-2">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="border-t border-border pt-3 pb-1 first:border-t-0 first:pt-0"
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <Skeleton className="h-5 w-48" />
+                  <Skeleton className="h-5 w-20" />
+                </div>
+                <Skeleton className="h-4 w-32" />
+              </div>
+            ))}
           </div>
         ) : error ? (
           <div className="text-center py-8 text-red-600">

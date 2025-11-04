@@ -8,6 +8,7 @@ import { PoliticianDetails } from '../components/PoliticianDetails';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Skeleton } from '../components/ui/skeleton';
 
 export default function PoliticianSearch() {
   const {
@@ -94,13 +95,25 @@ export default function PoliticianSearch() {
 
       {/* Search Results */}
       {isLoading ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8 text-muted-foreground">
-              Searching for politicians...
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <Card key={idx}>
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-start justify-between">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-6 w-12" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       ) : politicians.length > 0 ? (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">

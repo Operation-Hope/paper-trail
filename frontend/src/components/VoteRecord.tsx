@@ -11,6 +11,7 @@ import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Skeleton } from './ui/skeleton';
 import { X, Info } from 'lucide-react';
 import { api } from '../services/api';
 import type { Vote } from '../types/api';
@@ -157,7 +158,47 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
       {isLoading ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8 text-muted-foreground">Loading votes...</div>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-24">Vote</TableHead>
+                    <TableHead className="w-32">Bill Number</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="w-32">Date Introduced</TableHead>
+                    <TableHead className="w-64">Subjects</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        <Skeleton className="h-6 w-16" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-20" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-24" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Skeleton className="h-6 w-16" />
+                          <Skeleton className="h-6 w-16" />
+                          <Skeleton className="h-6 w-16" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       ) : !voteData || voteData.votes.length === 0 ? (

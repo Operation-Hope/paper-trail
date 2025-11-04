@@ -8,7 +8,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, type TooltipItem } from 
 import { Doughnut } from 'react-chartjs-2';
 import { api } from '../services/api';
 import type { DonationSummary } from '../types/api';
-import LoadingSpinner from './LoadingSpinner';
+import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -96,8 +96,13 @@ export default function DonationChart({
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="pt-6">
-          <LoadingSpinner message="Loading donation data..." />
+        <CardHeader>
+          <Skeleton className="h-7 w-64 mx-auto" />
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-center items-center py-8">
+            <Skeleton className="h-64 w-64 rounded-full" />
+          </div>
         </CardContent>
       </Card>
     );
