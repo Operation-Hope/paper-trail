@@ -2,20 +2,23 @@
  * Vote record component displaying paginated voting history with filtering
  * Shows votes in a table with pagination controls and subject filtering
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useVotes } from '../hooks/useVotes';
 import { VoteFilters } from './VoteFilters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { api } from '../services/api';
 import type { Vote } from '../types/api';
 
 interface VoteRecordProps {
   politicianId: string;
+  selectedSubjectForDonations?: string | null;
+  onSubjectClick?: (subject: string | null) => void;
 }
 
-export function VoteRecord({ politicianId }: VoteRecordProps) {
+export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjectClick }: VoteRecordProps) {
   const {
     voteData,
     isLoading,
@@ -31,10 +34,29 @@ export function VoteRecord({ politicianId }: VoteRecordProps) {
     loadVotes,
   } = useVotes();
 
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
+
   useEffect(() => {
     loadVotes(politicianId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [politicianId]);
+
+  useEffect(() => {
+    const loadSubjects = async () => {
+      setIsLoadingSubjects(true);
+      try {
+        const subjects = await api.getBillSubjects();
+        setAvailableSubjects(subjects);
+      } catch (err) {
+        console.error('Failed to load bill subjects:', err);
+      } finally {
+        setIsLoadingSubjects(false);
+      }
+    };
+
+    loadSubjects();
+  }, []);
 
   const getVoteColor = (vote: Vote['Vote']): string => {
     switch (vote) {
@@ -61,8 +83,18 @@ export function VoteRecord({ politicianId }: VoteRecordProps) {
   };
 
   const handleSubjectClick = (clickedSubject: string) => {
-    setSubject(clickedSubject);
-    setCurrentPage(1);
+    // If clicking the same subject that's already selected for donations, deselect it
+    if (selectedSubjectForDonations === clickedSubject && onSubjectClick) {
+      onSubjectClick(null);
+    } else {
+      // Filter votes by this subject
+      setSubject(clickedSubject);
+      setCurrentPage(1);
+      // Also filter donations by this subject
+      if (onSubjectClick) {
+        onSubjectClick(clickedSubject);
+      }
+    }
   };
 
   if (error) {
@@ -89,6 +121,8 @@ export function VoteRecord({ politicianId }: VoteRecordProps) {
             setSubject={setSubject}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
+            availableSubjects={availableSubjects}
+            isLoadingSubjects={isLoadingSubjects}
           />
         </CardContent>
       </Card>
@@ -145,7 +179,11 @@ export function VoteRecord({ politicianId }: VoteRecordProps) {
                               <Badge
                                 key={idx}
                                 variant="outline"
-                                className="cursor-pointer hover:bg-gray-100"
+                                className={`cursor-pointer hover:bg-gray-100 ${
+                                  selectedSubjectForDonations === subj
+                                    ? 'bg-red-100 border-red-500 text-red-800 font-semibold'
+                                    : ''
+                                }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleSubjectClick(subj);

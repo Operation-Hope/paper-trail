@@ -42,8 +42,16 @@ export function useVotes(): UseVotesResult {
         sort: sortOrder,
       };
 
-      if (billType) params.type = billType;
-      if (subject) params.subject = subject;
+      if (billType) {
+        // Split comma-separated string into array
+        const types = billType.split(',').filter(Boolean);
+        params.type = types.length === 1 ? types[0] : types;
+      }
+      if (subject) {
+        // Split comma-separated string into array
+        const subjects = subject.split(',').filter(Boolean);
+        params.subject = subjects.length === 1 ? subjects[0] : subjects;
+      }
 
       const data = await api.getPoliticianVotes(id, params);
       setVoteData(data);

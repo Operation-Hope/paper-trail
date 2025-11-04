@@ -2,12 +2,9 @@
  * Vote filtering UI component
  * Provides bill type, subject, and sort order filtering controls
  */
-import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { api } from '../services/api';
 
 interface VoteFiltersProps {
   billType: string;
@@ -16,6 +13,8 @@ interface VoteFiltersProps {
   setSubject: (subject: string) => void;
   sortOrder: 'ASC' | 'DESC';
   setSortOrder: (order: 'ASC' | 'DESC') => void;
+  availableSubjects: string[];
+  isLoadingSubjects: boolean;
 }
 
 export function VoteFilters({
@@ -25,29 +24,15 @@ export function VoteFilters({
   setSubject,
   sortOrder,
   setSortOrder,
+  availableSubjects,
+  isLoadingSubjects,
 }: VoteFiltersProps) {
-  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
-  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
-
-  useEffect(() => {
-    const loadSubjects = async () => {
-      setIsLoadingSubjects(true);
-      try {
-        const subjects = await api.getBillSubjects();
-        setAvailableSubjects(subjects);
-      } catch (err) {
-        console.error('Failed to load bill subjects:', err);
-      } finally {
-        setIsLoadingSubjects(false);
-      }
-    };
-
-    loadSubjects();
-  }, []);
 
   const billTypes = [
     { id: 'hr', label: 'House (HR)' },
     { id: 's', label: 'Senate (S)' },
+    { id: 'hjres', label: 'HJRes (House Joint)' },
+    { id: 'sjres', label: 'SJRes (Senate Joint)' },
   ];
 
   const handleBillTypeChange = (type: string, checked: boolean) => {
@@ -66,6 +51,24 @@ export function VoteFilters({
 
   const isBillTypeChecked = (type: string): boolean => {
     return billType.split(',').includes(type);
+  };
+
+  const handleSubjectChange = (subj: string, checked: boolean) => {
+    const currentSubjects = subject.split(',').filter(Boolean);
+
+    if (checked) {
+      // Add the subject
+      const newSubjects = [...currentSubjects, subj];
+      setSubject(newSubjects.join(','));
+    } else {
+      // Remove the subject
+      const newSubjects = currentSubjects.filter(s => s !== subj);
+      setSubject(newSubjects.join(','));
+    }
+  };
+
+  const isSubjectChecked = (subj: string): boolean => {
+    return subject.split(',').includes(subj);
   };
 
   const clearFilters = () => {
@@ -104,24 +107,34 @@ export function VoteFilters({
 
       {/* Subject Filter */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Subject</Label>
-        <Select
-          value={subject || 'all'}
-          onValueChange={(value) => setSubject(value === 'all' ? '' : value)}
-          disabled={isLoadingSubjects}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All subjects" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All subjects</SelectItem>
-            {availableSubjects.map((subj) => (
-              <SelectItem key={subj} value={subj}>
-                {subj}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Label className="text-sm font-medium">Bill Subjects</Label>
+        {isLoadingSubjects ? (
+          <div className="text-sm text-gray-500">Loading subjects...</div>
+        ) : (
+          <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1">
+            {availableSubjects.length === 0 ? (
+              <div className="text-sm text-gray-500">No subjects available</div>
+            ) : (
+              availableSubjects.map((subj) => (
+                <div key={subj} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`subject-${subj}`}
+                    checked={isSubjectChecked(subj)}
+                    onCheckedChange={(checked) =>
+                      handleSubjectChange(subj, checked === true)
+                    }
+                  />
+                  <Label
+                    htmlFor={`subject-${subj}`}
+                    className="text-sm cursor-pointer flex-1"
+                  >
+                    {subj}
+                  </Label>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {/* Sort Order */}

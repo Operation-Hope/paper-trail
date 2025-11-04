@@ -2,6 +2,7 @@
  * Politician details view component
  * Displays comprehensive information including header, donation chart, and voting record
  */
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
@@ -15,10 +16,22 @@ interface PoliticianDetailsProps {
 }
 
 export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProps) {
+  const [selectedSubjectForDonations, setSelectedSubjectForDonations] = useState<string | null>(null);
+
   const getPartyColor = (party: string): string => {
     if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300';
     if (party === 'Democratic') return 'bg-blue-100 text-blue-800 border-blue-300';
     return 'bg-gray-100 text-gray-800 border-gray-300';
+  };
+
+  const handleSubjectClick = (subject: string | null) => {
+    setSelectedSubjectForDonations(subject);
+  };
+
+  const handleDonationTitleClick = () => {
+    if (selectedSubjectForDonations) {
+      setSelectedSubjectForDonations(null);
+    }
   };
 
   return (
@@ -58,10 +71,19 @@ export function PoliticianDetails({ politician, onClose }: PoliticianDetailsProp
       </Card>
 
       {/* Donation Chart Section */}
-      <DonationChart politicianId={politician.politicianid} />
+      <DonationChart
+        politicianId={politician.politicianid}
+        selectedTopic={selectedSubjectForDonations || undefined}
+        onTopicChange={(topic) => setSelectedSubjectForDonations(topic || null)}
+        onTitleClick={selectedSubjectForDonations ? handleDonationTitleClick : undefined}
+      />
 
       {/* Vote Record Section */}
-      <VoteRecord politicianId={politician.politicianid} />
+      <VoteRecord
+        politicianId={politician.politicianid}
+        selectedSubjectForDonations={selectedSubjectForDonations}
+        onSubjectClick={handleSubjectClick}
+      />
     </div>
   );
 }
