@@ -32,24 +32,39 @@ export function useVotes(): UseVotesResult {
   const [politicianId, setPoliticianId] = useState<string | null>(null);
 
   const loadVotes = async (id: string) => {
+    // Detect if switching to a different politician
+    const isNewPolitician = politicianId !== null && politicianId !== id;
+
+    // Reset filters and pagination when switching to a different politician
+    if (isNewPolitician) {
+      setCurrentPage(1);
+      setSortOrder('DESC');
+      setBillType('');
+      setSubject('');
+    }
+
     setPoliticianId(id);
     setIsLoading(true);
     setError(null);
 
     try {
+      // Use reset values if switching politicians, otherwise use current state
       const params: VoteParams = {
-        page: currentPage,
-        sort: sortOrder,
+        page: isNewPolitician ? 1 : currentPage,
+        sort: isNewPolitician ? 'DESC' : sortOrder,
       };
 
-      if (billType) {
+      const activeBillType = isNewPolitician ? '' : billType;
+      const activeSubject = isNewPolitician ? '' : subject;
+
+      if (activeBillType) {
         // Split comma-separated string into array
-        const types = billType.split(',').filter(Boolean);
+        const types = activeBillType.split(',').filter(Boolean);
         params.type = types.length === 1 ? types[0] : types;
       }
-      if (subject) {
+      if (activeSubject) {
         // Split comma-separated string into array
-        const subjects = subject.split(',').filter(Boolean);
+        const subjects = activeSubject.split(',').filter(Boolean);
         params.subject = subjects.length === 1 ? subjects[0] : subjects;
       }
 
