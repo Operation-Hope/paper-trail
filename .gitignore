@@ -8,8 +8,13 @@ __pycache__/
 
 # Ignore downloaded bulk data files
 *.zip
-*.json
 *.csv
+
+# Ignore bulk data JSON files but allow package.json and other config files
+/contributions/*.json
+/votes/*.json
+/bills/*.json
+sql/*.json
 
 # Ignore the data directories (already in your original gitignore)
 /contributions/
