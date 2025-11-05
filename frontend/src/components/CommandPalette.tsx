@@ -77,11 +77,6 @@ export function CommandPalette() {
 
     // Navigate to politician detail URL with minimal history
     navigate(buildPoliticianUrl(politician.politicianid), { replace: true });
-
-    // Dispatch event for backward compatibility
-    window.dispatchEvent(
-      new CustomEvent('selectPoliticianFromCommand', { detail: politician })
-    );
   }, [navigate]);
 
   const handleSelectDonor = useCallback((donor: Donor) => {
@@ -90,11 +85,6 @@ export function CommandPalette() {
 
     // Navigate to donor detail URL with minimal history
     navigate(buildDonorUrl(donor.donorid), { replace: true });
-
-    // Dispatch event for backward compatibility
-    window.dispatchEvent(
-      new CustomEvent('selectDonorFromCommand', { detail: donor })
-    );
   }, [navigate]);
 
   const handleToggleTheme = useCallback(() => {
