@@ -11,14 +11,16 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/The_Young_Turks_logo.svg/200px-The_Young_Turks_logo.svg.png"
-              alt="TYT Logo"
-              className="h-10 w-10"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+            <div className="h-10 w-10 flex-shrink-0">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/The_Young_Turks_logo.svg/200px-The_Young_Turks_logo.svg.png"
+                alt="TYT Logo"
+                className="h-10 w-10"
+                onError={(e) => {
+                  e.currentTarget.style.visibility = 'hidden';
+                }}
+              />
+            </div>
             <div>
               <h1 className="text-2xl font-bold">Paper Trail</h1>
               <p className="text-xs text-blue-100 dark:text-gray-400">by The People</p>

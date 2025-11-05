@@ -27,15 +27,17 @@ export function PoliticianCard({
   comparisonMode = false,
 }: PoliticianCardProps) {
   const getPartyColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300';
-    if (party === 'Democratic') return 'bg-blue-100 text-blue-800 border-blue-300';
-    return 'bg-gray-100 text-gray-800 border-gray-300';
+    // Muted but recognizable party colors
+    if (party === 'Republican') return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900';
+    if (party === 'Democratic') return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900';
+    return 'bg-muted text-muted-foreground border-border';
   };
 
   const getAvatarColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-500 text-white';
-    if (party === 'Democratic') return 'bg-blue-500 text-white';
-    return 'bg-gray-500 text-white';
+    // Softer, desaturated avatar colors
+    if (party === 'Republican') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+    if (party === 'Democratic') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+    return 'bg-muted text-muted-foreground';
   };
 
   const getInitials = (firstname: string, lastname: string): string => {
@@ -89,7 +91,7 @@ export function PoliticianCard({
                 {politician.firstname} {politician.lastname}
               </h3>
               {!politician.isactive && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="outline" className="text-xs text-muted-foreground">
                   Inactive
                 </Badge>
               )}
@@ -99,9 +101,11 @@ export function PoliticianCard({
               <Badge className={getPartyColor(politician.party)}>
                 {politician.party}
               </Badge>
-              <Badge variant="outline">{politician.state}</Badge>
+              <Badge variant="outline" className="text-muted-foreground">{politician.state}</Badge>
               {politician.role && (
-                <Badge variant="secondary">{politician.role}</Badge>
+                <Badge variant="outline" className="border-amber-200 text-amber-700 dark:border-amber-900 dark:text-amber-400">
+                  {politician.role}
+                </Badge>
               )}
             </div>
 

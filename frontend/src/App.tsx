@@ -1,11 +1,10 @@
 /**
  * Main application component with React Router setup
- * Defines routes for Politician Search, Donor Search, and Feedback pages
+ * Defines routes for Unified Search and Feedback pages
  */
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import PoliticianSearch from './pages/PoliticianSearch';
-import DonorSearch from './pages/DonorSearch';
+import UnifiedSearch from './pages/UnifiedSearch';
 import Feedback from './pages/Feedback';
 import { CommandPalette } from './components/CommandPalette';
 import './index.css';
@@ -18,15 +17,13 @@ function AppContent() {
         <Header />
         <main className="container mx-auto px-4 py-8">
           <Routes>
-            {/* Politician routes - all render PoliticianSearch component */}
-            <Route path="/" element={<PoliticianSearch />} />
-            <Route path="/politician" element={<PoliticianSearch />} />
-            <Route path="/politician/:id" element={<PoliticianSearch />} />
-            <Route path="/politician/compare" element={<PoliticianSearch />} />
-
-            {/* Donor routes - all render DonorSearch component */}
-            <Route path="/donor" element={<DonorSearch />} />
-            <Route path="/donor/:id" element={<DonorSearch />} />
+            {/* Unified search routes */}
+            <Route path="/" element={<UnifiedSearch />} />
+            <Route path="/politician" element={<UnifiedSearch />} />
+            <Route path="/politician/:id" element={<UnifiedSearch />} />
+            <Route path="/politician/compare" element={<UnifiedSearch />} />
+            <Route path="/donor" element={<UnifiedSearch />} />
+            <Route path="/donor/:id" element={<UnifiedSearch />} />
 
             {/* Other routes */}
             <Route path="/feedback" element={<Feedback />} />
