@@ -14,6 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
 import { Search, GitCompare, X } from 'lucide-react';
+import { useRouteState } from '../utils/routing';
+import { api } from '../services/api';
 import type { Politician } from '../types/api';
 
 export default function PoliticianSearch() {
@@ -33,7 +35,98 @@ export default function PoliticianSearch() {
     clearComparison,
   } = usePoliticianSearch();
 
+  const {
+    entityId,
+    searchQuery,
+    comparisonIds,
+    navigateToEntity,
+    navigateToComparison,
+    navigateToSearch,
+    navigateBack,
+  } = useRouteState();
+
   const [comparisonMode, setComparisonMode] = useState(false);
+
+  // Local input state - this is the source of truth for the input field
+  const [inputValue, setInputValue] = useState(query);
+
+  // Hydrate state from URL on mount and URL changes
+  useEffect(() => {
+    const loadFromUrl = async () => {
+      if (entityId) {
+        // URL contains politician ID
+        const politicianId = Number(entityId);
+
+        // Check if already selected
+        if (selectedPolitician?.politicianid === politicianId) {
+          return;
+        }
+
+        // Try to find in search results first
+        const politician = politicians.find((p) => p.politicianid === politicianId);
+        if (politician) {
+          selectPolitician(politician);
+          return;
+        }
+
+        // Not in search results - fetch directly from API (cold start)
+        try {
+          const fetchedPolitician = await api.getPolitician(politicianId);
+          selectPolitician(fetchedPolitician);
+        } catch (err) {
+          console.error('Failed to load politician from URL:', err);
+        }
+      } else if (comparisonIds.length >= 2) {
+        // URL contains comparison IDs
+        // Find politicians in current search results
+        const foundPoliticians = comparisonIds
+          .map((id) => politicians.find((p) => p.politicianid === id))
+          .filter((p): p is Politician => p !== undefined);
+
+        if (foundPoliticians.length >= 2) {
+          clearSelection();
+          foundPoliticians.forEach(toggleComparison);
+        } else if (foundPoliticians.length === 0) {
+          // Cold start - fetch politicians from API
+          try {
+            const fetchedPoliticians = await Promise.all(
+              comparisonIds.map((id) => api.getPolitician(id))
+            );
+            clearSelection();
+            fetchedPoliticians.forEach(toggleComparison);
+          } catch (err) {
+            console.error('Failed to load comparison politicians from URL:', err);
+          }
+        }
+      } else if (searchQuery && searchQuery !== query) {
+        // Set search query from URL
+        setInputValue(searchQuery);
+        setQuery(searchQuery);
+        // Trigger search if query is valid
+        if (searchQuery.length >= 2) {
+          search(searchQuery);
+        }
+      }
+    };
+
+    loadFromUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId, comparisonIds, searchQuery, politicians, selectedPolitician, selectPolitician, clearSelection, toggleComparison]);
+
+  // Sync URL when politician is selected
+  useEffect(() => {
+    if (selectedPolitician && !entityId) {
+      navigateToEntity(selectedPolitician.politicianid, 'politician');
+    }
+  }, [selectedPolitician, entityId, navigateToEntity]);
+
+  // Sync URL when comparison starts
+  useEffect(() => {
+    if (isComparing && comparisonIds.length === 0) {
+      const ids = comparisonPoliticians.map((p) => p.politicianid);
+      navigateToComparison(ids);
+    }
+  }, [isComparing, comparisonIds.length, comparisonPoliticians, navigateToComparison]);
 
   // Listen for politician selection from command palette
   useEffect(() => {
@@ -48,17 +141,26 @@ export default function PoliticianSearch() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    await search();
+    // Update hook state and trigger search
+    setQuery(inputValue);
+    if (inputValue.length >= 2) {
+      await search(inputValue);
+      navigateToSearch('politician', inputValue);
+    } else if (inputValue.length === 0) {
+      navigateToSearch('politician');
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    // Only update local state - search happens on button click or Enter
+    setInputValue(e.target.value);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      search();
+      // Trigger the same logic as clicking Search button
+      handleSearch(e as any);
     }
   };
 
@@ -72,6 +174,12 @@ export default function PoliticianSearch() {
   const handleExitComparison = () => {
     clearComparison();
     setComparisonMode(false);
+    navigateBack();
+  };
+
+  const handleClearSelection = () => {
+    clearSelection();
+    navigateBack();
   };
 
   // If comparing two politicians, show the comparison view
@@ -92,7 +200,7 @@ export default function PoliticianSearch() {
       <div className="container mx-auto px-4 py-8">
         <PoliticianDetails
           politician={selectedPolitician}
-          onClose={clearSelection}
+          onClose={handleClearSelection}
         />
       </div>
     );
@@ -113,20 +221,20 @@ export default function PoliticianSearch() {
             <Input
               type="text"
               placeholder="Enter politician name (minimum 2 characters)"
-              value={query}
+              value={inputValue}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               className="flex-1"
             />
             <Button
               type="submit"
-              disabled={isLoading || query.length < 2}
+              disabled={isLoading || inputValue.length < 2}
             >
               {isLoading ? 'Searching...' : 'Search'}
             </Button>
           </form>
 
-          {query.length > 0 && query.length < 2 && (
+          {inputValue.length > 0 && inputValue.length < 2 && (
             <p className="text-sm text-amber-600 mt-2">
               Please enter at least 2 characters to search
             </p>

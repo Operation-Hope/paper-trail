@@ -2,7 +2,7 @@
  * Custom hook for managing politician search state and operations
  * Handles search queries, results, selection, and loading/error states
  */
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { api } from '../services/api';
 import type { Politician } from '../types/api';
 
@@ -15,7 +15,7 @@ interface UsePoliticianSearchResult {
   isComparing: boolean;
   isLoading: boolean;
   error: string | null;
-  search: () => Promise<void>;
+  search: (searchQuery?: string) => Promise<void>;
   selectPolitician: (politician: Politician) => void;
   toggleComparison: (politician: Politician) => void;
   clearSelection: () => void;
@@ -30,8 +30,9 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const search = async () => {
-    if (query.length < 2) {
+  const search = useCallback(async (searchQuery?: string) => {
+    const queryToSearch = searchQuery ?? query;
+    if (queryToSearch.length < 2) {
       setPoliticians([]);
       return;
     }
@@ -40,7 +41,7 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
     setError(null);
 
     try {
-      const results = await api.searchPoliticians(query);
+      const results = await api.searchPoliticians(queryToSearch);
       setPoliticians(results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
@@ -48,14 +49,14 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [query]);
 
-  const selectPolitician = (politician: Politician) => {
+  const selectPolitician = useCallback((politician: Politician) => {
     setSelectedPolitician(politician);
     setComparisonPoliticians([]);
-  };
+  }, []);
 
-  const toggleComparison = (politician: Politician) => {
+  const toggleComparison = useCallback((politician: Politician) => {
     setSelectedPolitician(null);
     setComparisonPoliticians((prev) => {
       const isSelected = prev.some((p) => p.politicianid === politician.politicianid);
@@ -67,15 +68,15 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
       }
       return [...prev, politician];
     });
-  };
+  }, []);
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setSelectedPolitician(null);
-  };
+  }, []);
 
-  const clearComparison = () => {
+  const clearComparison = useCallback(() => {
     setComparisonPoliticians([]);
-  };
+  }, []);
 
   const isComparing = comparisonPoliticians.length === 2;
 
