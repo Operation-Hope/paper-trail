@@ -1,21 +1,20 @@
 /**
  * Unified Search page with tabs for Politicians and Donors
- * Provides seamless switching between search types while maintaining state
+ * Uses React 19 Suspense for declarative loading states
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { usePoliticianSearch } from '../hooks/usePoliticianSearch';
 import { useDonorSearch } from '../hooks/useDonorSearch';
-import { useDeferredLoading } from '../hooks/useDeferredLoading';
 import { useRouteState } from '../utils/routing';
-import { PoliticianCard } from '../components/PoliticianCard';
+import { PoliticianSearchResults } from '../components/PoliticianSearchResults';
+import { DonorSearchResults } from '../components/DonorSearchResults';
 import { PoliticianDetails } from '../components/PoliticianDetails';
 import { PoliticianComparison } from '../components/PoliticianComparison';
-import { DonorCard } from '../components/DonorCard';
 import { DonorDetails } from '../components/DonorDetails';
 import { ContributionHistory } from '../components/ContributionHistory';
 import { api } from '../services/api';
@@ -76,11 +75,6 @@ export default function UnifiedSearch() {
   // Local input state for each search type
   const [politicianInput, setPoliticianInput] = useState(politicianQuery);
   const [donorInput, setDonorInput] = useState(donorQuery);
-
-  // Deferred loading states
-  const showPoliticianLoading = useDeferredLoading(isPoliticianLoading);
-  const showDonorSearchLoading = useDeferredLoading(isDonorSearching);
-  const showDonationsLoading = useDeferredLoading(isLoadingDonations);
 
   // Sync input with query when query changes
   useEffect(() => {
@@ -294,7 +288,7 @@ export default function UnifiedSearch() {
         />
         <ContributionHistory
           donations={donations}
-          isLoading={showDonationsLoading}
+          isLoading={isLoadingDonations}
           error={donationsError}
         />
       </div>
@@ -332,7 +326,7 @@ export default function UnifiedSearch() {
                   type="submit"
                   disabled={isPoliticianLoading || politicianInput.length < 2}
                 >
-                  {showPoliticianLoading ? 'Searching...' : 'Search'}
+                  {isPoliticianLoading ? 'Searching...' : 'Search'}
                 </Button>
               </form>
 
@@ -366,7 +360,7 @@ export default function UnifiedSearch() {
                   type="submit"
                   disabled={isDonorSearching || donorInput.length < 3}
                 >
-                  {showDonorSearchLoading ? 'Searching...' : 'Search'}
+                  {isDonorSearching ? 'Searching...' : 'Search'}
                 </Button>
               </form>
 
@@ -385,92 +379,46 @@ export default function UnifiedSearch() {
           </CardContent>
         </Card>
 
-        {/* Politician Search Results */}
+        {/* Politician Search Results with Suspense */}
         <TabsContent value="politician">
-          {showPoliticianLoading ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  Searching for politicians...
-                </div>
-              </CardContent>
-            </Card>
-          ) : politicians.length > 0 ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">
-                  Found {politicians.length} politician{politicians.length !== 1 ? 's' : ''}
-                </h2>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (comparisonPoliticians.length > 0) {
-                      clearComparison();
-                    }
-                  }}
-                >
-                  {comparisonPoliticians.length > 0 ? `Compare (${comparisonPoliticians.length})` : 'Compare Mode'}
-                </Button>
-              </div>
-              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-opacity duration-200 ${isPoliticianLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                {politicians.map((politician) => (
-                  <PoliticianCard
-                    key={politician.politicianid}
-                    politician={politician}
-                    onSelect={selectPolitician}
-                    onToggleComparison={toggleComparison}
-                    isSelectedForComparison={comparisonPoliticians.some(
-                      (p) => p.politicianid === politician.politicianid
-                    )}
-                    comparisonMode={comparisonPoliticians.length > 0}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : politicianQuery.length >= 2 && !isPoliticianLoading && !politicianError ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  No politicians found matching "{politicianQuery}"
-                </div>
-              </CardContent>
-            </Card>
+          {politicianQuery.length >= 2 ? (
+            <Suspense fallback={
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center py-8 text-muted-foreground">
+                    Searching for politicians...
+                  </div>
+                </CardContent>
+              </Card>
+            }>
+              <PoliticianSearchResults
+                searchQuery={politicianQuery}
+                comparisonPoliticians={comparisonPoliticians}
+                onSelectPolitician={selectPolitician}
+                onToggleComparison={toggleComparison}
+                onClearComparison={clearComparison}
+              />
+            </Suspense>
           ) : null}
         </TabsContent>
 
-        {/* Donor Search Results */}
+        {/* Donor Search Results with Suspense */}
         <TabsContent value="donor">
-          {showDonorSearchLoading ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  Searching for donors...
-                </div>
-              </CardContent>
-            </Card>
-          ) : donors.length > 0 ? (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">
-                Found {donors.length} donor{donors.length !== 1 ? 's' : ''}
-              </h2>
-              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-opacity duration-200 ${isDonorSearching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                {donors.map((donor) => (
-                  <DonorCard
-                    key={donor.donorid}
-                    donor={donor}
-                    onSelect={selectDonor}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : donorQuery.length >= 3 && !isDonorSearching && !donorSearchError ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  No donors found matching "{donorQuery}"
-                </div>
-              </CardContent>
-            </Card>
+          {donorQuery.length >= 3 ? (
+            <Suspense fallback={
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center py-8 text-muted-foreground">
+                    Searching for donors...
+                  </div>
+                </CardContent>
+              </Card>
+            }>
+              <DonorSearchResults
+                searchQuery={donorQuery}
+                onSelectDonor={selectDonor}
+              />
+            </Suspense>
           ) : null}
         </TabsContent>
       </Tabs>
