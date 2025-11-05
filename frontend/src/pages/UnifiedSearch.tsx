@@ -17,6 +17,7 @@ import { PoliticianDetails } from '../components/PoliticianDetails';
 import { PoliticianComparison } from '../components/PoliticianComparison';
 import { DonorDetails } from '../components/DonorDetails';
 import { ContributionHistory } from '../components/ContributionHistory';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { api } from '../services/api';
 import type { Politician, Donor } from '../types/api';
 
@@ -54,11 +55,8 @@ export default function UnifiedSearch() {
     setQuery: setDonorQuery,
     donors,
     selectedDonor,
-    donations,
     isSearching: isDonorSearching,
-    isLoadingDonations,
     searchError: donorSearchError,
-    donationsError,
     search: searchDonors,
     selectDonor,
     clearSelection: clearDonorSelection,
@@ -137,11 +135,18 @@ export default function UnifiedSearch() {
         } catch (err) {
           console.error('Failed to load politician from URL:', err);
         }
-      } else if (searchQuery && searchQuery !== politicianQuery) {
-        setPoliticianInput(searchQuery);
-        setPoliticianQuery(searchQuery);
-        if (searchQuery.length >= 2) {
-          searchPoliticians(searchQuery);
+      } else {
+        // No entityId in URL - clear selection if one exists (back button case)
+        if (selectedPolitician) {
+          clearPoliticianSelection();
+        }
+        // Handle search query
+        if (searchQuery && searchQuery !== politicianQuery) {
+          setPoliticianInput(searchQuery);
+          setPoliticianQuery(searchQuery);
+          if (searchQuery.length >= 2) {
+            searchPoliticians(searchQuery);
+          }
         }
       }
     };
@@ -171,11 +176,18 @@ export default function UnifiedSearch() {
         } catch (err) {
           console.error('Failed to load donor from URL:', err);
         }
-      } else if (searchQuery && searchQuery !== donorQuery) {
-        setDonorInput(searchQuery);
-        setDonorQuery(searchQuery);
-        if (searchQuery.length >= 3) {
-          searchDonors(searchQuery);
+      } else {
+        // No entityId in URL - clear selection if one exists (back button case)
+        if (selectedDonor) {
+          clearDonorSelection();
+        }
+        // Handle search query
+        if (searchQuery && searchQuery !== donorQuery) {
+          setDonorInput(searchQuery);
+          setDonorQuery(searchQuery);
+          if (searchQuery.length >= 3) {
+            searchDonors(searchQuery);
+          }
         }
       }
     };
@@ -184,19 +196,6 @@ export default function UnifiedSearch() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityId, searchQuery, activeTab]);
 
-  // Sync URL when politician is selected
-  useEffect(() => {
-    if (activeTab === 'politician' && selectedPolitician && !entityId) {
-      navigateToEntity(selectedPolitician.politicianid, 'politician');
-    }
-  }, [selectedPolitician, entityId, navigateToEntity, activeTab]);
-
-  // Sync URL when donor is selected
-  useEffect(() => {
-    if (activeTab === 'donor' && selectedDonor && !entityId) {
-      navigateToEntity(selectedDonor.donorid, 'donor');
-    }
-  }, [selectedDonor, entityId, navigateToEntity, activeTab]);
 
   // Politician search handlers
   const handlePoliticianSearch = async (e: React.FormEvent) => {
@@ -254,14 +253,26 @@ export default function UnifiedSearch() {
     navigateBack();
   };
 
+  // Wrapper to navigate to politician URL (let hydration useEffect handle selection)
+  const handleSelectPolitician = (politician: Politician) => {
+    navigateToEntity(politician.politicianid, 'politician');
+  };
+
+  // Wrapper to navigate to donor URL (let hydration useEffect handle selection)
+  const handleSelectDonor = (donor: Donor) => {
+    navigateToEntity(donor.donorid, 'donor');
+  };
+
   // If comparing politicians, show comparison view
   if (isComparing) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <PoliticianComparison
-          politicians={comparisonPoliticians as [Politician, Politician]}
-          onClose={clearComparison}
-        />
+        <ErrorBoundary fallbackTitle="Error loading comparison" onReset={clearComparison}>
+          <PoliticianComparison
+            politicians={comparisonPoliticians as [Politician, Politician]}
+            onClose={clearComparison}
+          />
+        </ErrorBoundary>
       </div>
     );
   }
@@ -270,10 +281,12 @@ export default function UnifiedSearch() {
   if (activeTab === 'politician' && selectedPolitician) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <PoliticianDetails
-          politician={selectedPolitician}
-          onClose={handleClearPoliticianSelection}
-        />
+        <ErrorBoundary fallbackTitle="Error loading politician details" onReset={handleClearPoliticianSelection}>
+          <PoliticianDetails
+            politician={selectedPolitician}
+            onClose={handleClearPoliticianSelection}
+          />
+        </ErrorBoundary>
       </div>
     );
   }
@@ -282,14 +295,14 @@ export default function UnifiedSearch() {
   if (activeTab === 'donor' && selectedDonor) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <DonorDetails
-          donor={selectedDonor}
-          onClose={handleClearDonorSelection}
-        />
+        <ErrorBoundary fallbackTitle="Error loading donor details" onReset={handleClearDonorSelection}>
+          <DonorDetails
+            donor={selectedDonor}
+            onClose={handleClearDonorSelection}
+          />
+        </ErrorBoundary>
         <ContributionHistory
-          donations={donations}
-          isLoading={isLoadingDonations}
-          error={donationsError}
+          donorId={selectedDonor.donorid}
         />
       </div>
     );
@@ -382,43 +395,47 @@ export default function UnifiedSearch() {
         {/* Politician Search Results with Suspense */}
         <TabsContent value="politician">
           {politicianQuery.length >= 2 ? (
-            <Suspense fallback={
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Searching for politicians...
-                  </div>
-                </CardContent>
-              </Card>
-            }>
-              <PoliticianSearchResults
-                searchQuery={politicianQuery}
-                comparisonPoliticians={comparisonPoliticians}
-                onSelectPolitician={selectPolitician}
-                onToggleComparison={toggleComparison}
-                onClearComparison={clearComparison}
-              />
-            </Suspense>
+            <ErrorBoundary fallbackTitle="Error loading search results">
+              <Suspense fallback={
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center py-8 text-muted-foreground">
+                      Searching for politicians...
+                    </div>
+                  </CardContent>
+                </Card>
+              }>
+                <PoliticianSearchResults
+                  searchQuery={politicianQuery}
+                  comparisonPoliticians={comparisonPoliticians}
+                  onSelectPolitician={handleSelectPolitician}
+                  onToggleComparison={toggleComparison}
+                  onClearComparison={clearComparison}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ) : null}
         </TabsContent>
 
         {/* Donor Search Results with Suspense */}
         <TabsContent value="donor">
           {donorQuery.length >= 3 ? (
-            <Suspense fallback={
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Searching for donors...
-                  </div>
-                </CardContent>
-              </Card>
-            }>
-              <DonorSearchResults
-                searchQuery={donorQuery}
-                onSelectDonor={selectDonor}
-              />
-            </Suspense>
+            <ErrorBoundary fallbackTitle="Error loading search results">
+              <Suspense fallback={
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center py-8 text-muted-foreground">
+                      Searching for donors...
+                    </div>
+                  </CardContent>
+                </Card>
+              }>
+                <DonorSearchResults
+                  searchQuery={donorQuery}
+                  onSelectDonor={handleSelectDonor}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ) : null}
         </TabsContent>
       </Tabs>

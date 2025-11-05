@@ -89,7 +89,7 @@ export function useRouteState(): RouteState {
         entityType === 'politician'
           ? buildPoliticianUrl(Number(id))
           : buildDonorUrl(Number(id));
-      navigate(url, { replace: true });
+      navigate(url);
     },
     [navigate]
   );
