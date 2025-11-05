@@ -1,7 +1,7 @@
 /**
  * Custom hook for donor search functionality
  * Manages donor search state, selected donor, and donation history
- * Includes request cancellation to prevent memory leaks from unmounted components
+ * Uses TanStack Query for server state management
  *
  * @returns Object containing search state, functions, and data
  * @property query - Current search query string
@@ -17,8 +17,10 @@
  * @property selectDonor - Function to select a donor and load their donations
  * @property clearSelection - Function to deselect current donor
  */
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
 import type { Donor, Donation } from '../types/api';
 
 interface UseDonorSearchResult {
@@ -38,88 +40,49 @@ interface UseDonorSearchResult {
 
 export function useDonorSearch(): UseDonorSearchResult {
   const [query, setQuery] = useState('');
-  const [donors, setDonors] = useState<Donor[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
-  const [donations, setDonations] = useState<Donation[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isLoadingDonations, setIsLoadingDonations] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [donationsError, setDonationsError] = useState<string | null>(null);
 
-  const donationAbortController = useRef<AbortController | null>(null);
+  // Use TanStack Query for donor search
+  const {
+    data: donors = [],
+    isLoading: isSearching,
+    error: searchQueryError,
+  } = useQuery({
+    queryKey: queryKeys.donors.search(searchQuery),
+    queryFn: () => api.searchDonors(searchQuery),
+    enabled: searchQuery.length >= 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      donationAbortController.current?.abort();
-    };
-  }, []);
+  // Use TanStack Query for donations fetch
+  const {
+    data: donations = [],
+    isLoading: isLoadingDonations,
+    error: donationsQueryError,
+  } = useQuery({
+    queryKey: queryKeys.donors.donations(selectedDonor?.donorid ?? 0),
+    queryFn: () => api.getDonorDonations(selectedDonor!.donorid),
+    enabled: selectedDonor !== null,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  const search = useCallback(async (searchQuery?: string) => {
-    const queryToSearch = searchQuery ?? query;
+  const search = useCallback(async (searchQueryParam?: string) => {
+    const queryToSearch = searchQueryParam ?? query;
     if (queryToSearch.length < 3) {
-      setDonors([]);
+      setSearchQuery('');
       return;
     }
 
-    setIsSearching(true);
-    setSearchError(null);
-
-    try {
-      const results = await api.searchDonors(queryToSearch);
-      setDonors(results);
-    } catch (err) {
-      setSearchError(err instanceof Error ? err.message : 'Search failed');
-      setDonors([]);
-    } finally {
-      setIsSearching(false);
-    }
+    setSearchQuery(queryToSearch);
   }, [query]);
 
-  const selectDonor = useCallback(async (donor: Donor) => {
-    // Cancel previous request if still pending
-    donationAbortController.current?.abort();
-
-    const abortController = new AbortController();
-    donationAbortController.current = abortController;
-
+  const selectDonor = useCallback((donor: Donor) => {
     setSelectedDonor(donor);
-    setIsLoadingDonations(true);
-    setDonationsError(null);
-
-    try {
-      const donationData = await api.getDonorDonations(donor.donorid, {
-        signal: abortController.signal
-      });
-
-      // Only update state if request wasn't aborted
-      if (!abortController.signal.aborted) {
-        setDonations(donationData);
-      }
-    } catch (err) {
-      // Ignore AbortError - it's expected when user navigates away quickly
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
-
-      if (!abortController.signal.aborted) {
-        setDonationsError(err instanceof Error ? err.message : 'Failed to load donations');
-        setDonations([]);
-      }
-    } finally {
-      if (!abortController.signal.aborted) {
-        setIsLoadingDonations(false);
-      }
-    }
   }, []);
 
   const clearSelection = useCallback(() => {
-    // Cancel pending donation request
-    donationAbortController.current?.abort();
-    donationAbortController.current = null;
-
     setSelectedDonor(null);
-    setDonations([]);
   }, []);
 
   return {
@@ -130,8 +93,8 @@ export function useDonorSearch(): UseDonorSearchResult {
     donations,
     isSearching,
     isLoadingDonations,
-    searchError,
-    donationsError,
+    searchError: searchQueryError ? (searchQueryError instanceof Error ? searchQueryError.message : 'Search failed') : null,
+    donationsError: donationsQueryError ? (donationsQueryError instanceof Error ? donationsQueryError.message : 'Failed to load donations') : null,
     search,
     selectDonor,
     clearSelection,

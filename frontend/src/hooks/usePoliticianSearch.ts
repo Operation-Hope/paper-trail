@@ -1,9 +1,12 @@
 /**
  * Custom hook for managing politician search state and operations
  * Handles search queries, results, selection, and loading/error states
+ * Uses TanStack Query for server state management
  */
 import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
 import type { Politician } from '../types/api';
 
 interface UsePoliticianSearchResult {
@@ -24,31 +27,30 @@ interface UsePoliticianSearchResult {
 
 export function usePoliticianSearch(): UsePoliticianSearchResult {
   const [query, setQuery] = useState('');
-  const [politicians, setPoliticians] = useState<Politician[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedPolitician, setSelectedPolitician] = useState<Politician | null>(null);
   const [comparisonPoliticians, setComparisonPoliticians] = useState<Politician[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const search = useCallback(async (searchQuery?: string) => {
-    const queryToSearch = searchQuery ?? query;
+  // Use TanStack Query for search results
+  const {
+    data: politicians = [],
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: queryKeys.politicians.search(searchQuery),
+    queryFn: () => api.searchPoliticians(searchQuery),
+    enabled: searchQuery.length >= 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const search = useCallback(async (searchQueryParam?: string) => {
+    const queryToSearch = searchQueryParam ?? query;
     if (queryToSearch.length < 2) {
-      setPoliticians([]);
+      setSearchQuery('');
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const results = await api.searchPoliticians(queryToSearch);
-      setPoliticians(results);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
-      setPoliticians([]);
-    } finally {
-      setIsLoading(false);
-    }
+    setSearchQuery(queryToSearch);
   }, [query]);
 
   const selectPolitician = useCallback((politician: Politician) => {
@@ -88,7 +90,7 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
     comparisonPoliticians,
     isComparing,
     isLoading,
-    error,
+    error: queryError ? (queryError instanceof Error ? queryError.message : 'Search failed') : null,
     search,
     selectPolitician,
     toggleComparison,
