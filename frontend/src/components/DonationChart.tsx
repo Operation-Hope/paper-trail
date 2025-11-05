@@ -3,15 +3,26 @@
  * Displays donation breakdown by industry using Chart.js
  * Supports optional topic filtering for industry-specific analysis
  */
-import { useState, useEffect } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, type TooltipItem } from 'chart.js';
+import { Suspense } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  type TooltipItem,
+  type ChartEvent,
+  type ActiveElement
+} from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { api } from '../services/api';
-import type { DonationSummary } from '../types/api';
+import { queryKeys } from '../lib/query/keys';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { PieChart } from 'lucide-react';
+import { ErrorBoundary } from './ErrorBoundary';
+import { useTheme } from '../components/providers/theme-provider';
 
 // CRITICAL: Register Chart.js components before use
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -48,78 +59,22 @@ const TOPICS = [
   'Transportation',
 ];
 
-export default function DonationChart({
+function DonationChartContent({
   politicianId,
   selectedTopic,
   onTopicChange,
   onTitleClick,
 }: DonationChartProps) {
-  const [donations, setDonations] = useState<DonationSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadDonations = async () => {
-      if (!isMounted) return;
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const data = selectedTopic
-          ? await api.getFilteredDonationSummary(politicianId, selectedTopic)
-          : await api.getDonationSummary(politicianId);
-
-        if (isMounted) {
-          setDonations(data);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load donations');
-          setDonations([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadDonations();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [politicianId, selectedTopic]);
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-7 w-64 mx-auto" />
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center items-center py-8">
-            <Skeleton className="h-64 w-64 rounded-full" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-red-600 text-center py-8">
-            Error: {error}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const { theme } = useTheme();
+  const { data: donations } = useSuspenseQuery({
+    queryKey: selectedTopic
+      ? queryKeys.politicians.donationsFiltered(politicianId, selectedTopic)
+      : queryKeys.politicians.donations(politicianId),
+    queryFn: () =>
+      selectedTopic
+        ? api.getFilteredDonationSummary(Number(politicianId), selectedTopic)
+        : api.getDonationSummary(Number(politicianId)),
+  });
 
   if (donations.length === 0) {
     return (
@@ -157,12 +112,11 @@ export default function DonationChart({
     ],
   };
 
-  const handleChartClick = (_event: unknown, elements: unknown[]) => {
+  const handleChartClick = (_event: ChartEvent, elements: ActiveElement[]) => {
     if (!onTopicChange) return;
 
-    const chartElements = elements as Array<{ index: number }>;
-    if (chartElements.length > 0) {
-      const clickedIndex = chartElements[0].index;
+    if (elements.length > 0) {
+      const clickedIndex = elements[0].index;
       const clickedIndustry = donations[clickedIndex]?.industry;
 
       if (clickedIndustry) {
@@ -171,7 +125,6 @@ export default function DonationChart({
           onTopicChange('');
         } else {
           // Find the topic that corresponds to this industry
-          // Note: This is a simple mapping - we could enhance this later
           onTopicChange(clickedIndustry);
         }
       }
@@ -242,7 +195,7 @@ export default function DonationChart({
           role="img"
           aria-label="Doughnut chart showing donation breakdown by industry. Click on a segment to filter."
         >
-          <Doughnut data={chartData} options={chartOptions} />
+          <Doughnut key={theme} data={chartData} options={chartOptions} />
         </div>
 
         {onTopicChange && (
@@ -272,5 +225,32 @@ export default function DonationChart({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+// Loading fallback component
+function DonationChartSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-7 w-64 mx-auto" />
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-center items-center py-8">
+          <Skeleton className="h-64 w-64 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function DonationChart(props: DonationChartProps) {
+  return (
+    <ErrorBoundary fallbackTitle="Error loading donation chart">
+      <Suspense fallback={<DonationChartSkeleton />}>
+        <DonationChartContent {...props} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

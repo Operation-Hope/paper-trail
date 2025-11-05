@@ -4,6 +4,7 @@
  */
 import { useEffect, useState, Suspense } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -134,6 +135,10 @@ export default function UnifiedSearch() {
           selectPolitician(fetchedPolitician);
         } catch (err) {
           console.error('Failed to load politician from URL:', err);
+          toast.error('Politician not found', {
+            description: 'The requested politician could not be loaded. Please try searching again.',
+          });
+          navigate('/politician');
         }
       } else {
         // No entityId in URL - clear selection if one exists (back button case)
@@ -175,6 +180,10 @@ export default function UnifiedSearch() {
           selectDonor(fetchedDonor);
         } catch (err) {
           console.error('Failed to load donor from URL:', err);
+          toast.error('Donor not found', {
+            description: 'The requested donor could not be loaded. Please try searching again.',
+          });
+          navigate('/donor');
         }
       } else {
         // No entityId in URL - clear selection if one exists (back button case)
@@ -198,8 +207,8 @@ export default function UnifiedSearch() {
 
 
   // Politician search handlers
-  const handlePoliticianSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePoliticianSearch = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setPoliticianQuery(politicianInput);
     if (politicianInput.length >= 2) {
       await searchPoliticians(politicianInput);
@@ -216,7 +225,7 @@ export default function UnifiedSearch() {
   const handlePoliticianKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handlePoliticianSearch(e as any);
+      handlePoliticianSearch();
     }
   };
 
@@ -226,8 +235,8 @@ export default function UnifiedSearch() {
   };
 
   // Donor search handlers
-  const handleDonorSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDonorSearch = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setDonorQuery(donorInput);
     if (donorInput.length >= 3) {
       await searchDonors(donorInput);
@@ -244,7 +253,7 @@ export default function UnifiedSearch() {
   const handleDonorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleDonorSearch(e as any);
+      handleDonorSearch();
     }
   };
 

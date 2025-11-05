@@ -2,8 +2,8 @@
  * Vote record component displaying paginated voting history with filtering
  * Shows votes in a table with pagination controls and subject filtering
  */
-import { useEffect, useState } from 'react';
-import { useVotes } from '../hooks/useVotes';
+import { Suspense } from 'react';
+import { useVotes, useBillSubjects } from '../hooks/useVotes';
 import { VoteFilters } from './VoteFilters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Button } from './ui/button';
@@ -13,7 +13,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { X, Info, FileSearch } from 'lucide-react';
-import { api } from '../services/api';
+import { formatDate } from '../utils/formatters';
+import { ErrorBoundary } from './ErrorBoundary';
 import type { Vote } from '../types/api';
 
 interface VoteRecordProps {
@@ -22,11 +23,14 @@ interface VoteRecordProps {
   onSubjectClick?: (subject: string | null) => void;
 }
 
-export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjectClick }: VoteRecordProps) {
+const MAX_VISIBLE_PAGES = 5;
+const EDGE_PAGES_THRESHOLD = 3;
+const EDGE_DISTANCE = 2;
+const WINDOW_OFFSET = 2;
+
+function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjectClick }: VoteRecordProps) {
   const {
     voteData,
-    isLoading,
-    error,
     currentPage,
     sortOrder,
     billType,
@@ -35,32 +39,9 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
     setSortOrder,
     setBillType,
     setSubject,
-    loadVotes,
-  } = useVotes();
+  } = useVotes({ politicianId });
 
-  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
-  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
-
-  useEffect(() => {
-    loadVotes(politicianId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [politicianId]);
-
-  useEffect(() => {
-    const loadSubjects = async () => {
-      setIsLoadingSubjects(true);
-      try {
-        const subjects = await api.getBillSubjects();
-        setAvailableSubjects(subjects);
-      } catch (err) {
-        console.error('Failed to load bill subjects:', err);
-      } finally {
-        setIsLoadingSubjects(false);
-      }
-    };
-
-    loadSubjects();
-  }, []);
+  const { data: availableSubjects } = useBillSubjects();
 
   const getVoteColor = (vote: Vote['Vote']): string => {
     switch (vote) {
@@ -77,15 +58,6 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const handleSubjectClick = (clickedSubject: string) => {
     // If clicking the same subject that's already selected for donations, deselect it
     if (selectedSubjectForDonations === clickedSubject && onSubjectClick) {
@@ -100,16 +72,6 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
       }
     }
   };
-
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-red-600">Error loading votes: {error}</div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -150,58 +112,11 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
             availableSubjects={availableSubjects}
-            isLoadingSubjects={isLoadingSubjects}
           />
         </CardContent>
       </Card>
 
-      {isLoading ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-24">Vote</TableHead>
-                    <TableHead className="w-32">Bill Number</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead className="w-32">Date Introduced</TableHead>
-                    <TableHead className="w-64">Subjects</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Array.from({ length: 5 }).map((_, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>
-                        <Skeleton className="h-6 w-16" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-24" />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Skeleton className="h-6 w-16" />
-                          <Skeleton className="h-6 w-16" />
-                          <Skeleton className="h-6 w-16" />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      ) : !voteData || voteData.votes.length === 0 ? (
+      {!voteData || voteData.votes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-12 space-y-4">
@@ -325,21 +240,21 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
                       Previous
                     </Button>
                     {Array.from(
-                      { length: Math.min(5, voteData.pagination.totalPages) },
+                      { length: Math.min(MAX_VISIBLE_PAGES, voteData.pagination.totalPages) },
                       (_, i) => {
                         let pageNum: number;
-                        if (voteData.pagination.totalPages <= 5) {
+                        if (voteData.pagination.totalPages <= MAX_VISIBLE_PAGES) {
                           pageNum = i + 1;
-                        } else if (currentPage <= 3) {
+                        } else if (currentPage <= EDGE_PAGES_THRESHOLD) {
                           pageNum = i + 1;
                         } else if (
                           currentPage >=
-                          voteData.pagination.totalPages - 2
+                          voteData.pagination.totalPages - EDGE_DISTANCE
                         ) {
                           pageNum =
-                            voteData.pagination.totalPages - 4 + i;
+                            voteData.pagination.totalPages - (MAX_VISIBLE_PAGES - 1) + i;
                         } else {
-                          pageNum = currentPage - 2 + i;
+                          pageNum = currentPage - WINDOW_OFFSET + i;
                         }
                         return pageNum;
                       }
@@ -369,5 +284,82 @@ export function VoteRecord({ politicianId, selectedSubjectForDonations, onSubjec
         </>
       )}
     </div>
+  );
+}
+
+// Loading fallback component
+function VoteRecordSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Voting Record</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 mb-4">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-24">Vote</TableHead>
+                  <TableHead className="w-32">Bill Number</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="w-32">Date Introduced</TableHead>
+                  <TableHead className="w-64">Subjects</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell>
+                      <Skeleton className="h-6 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export function VoteRecord(props: VoteRecordProps) {
+  return (
+    <ErrorBoundary fallbackTitle="Error loading voting record">
+      <Suspense fallback={<VoteRecordSkeleton />}>
+        <VoteRecordContent {...props} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

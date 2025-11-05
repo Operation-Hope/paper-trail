@@ -7,12 +7,14 @@ import Header from './components/Header';
 import UnifiedSearch from './pages/UnifiedSearch';
 import Feedback from './pages/Feedback';
 import { CommandPalette } from './components/CommandPalette';
+import { Toaster } from './components/ui/sonner';
 import './index.css';
 
 function AppContent() {
   return (
     <>
       <CommandPalette />
+      <Toaster />
       <div className="min-h-screen bg-background text-foreground">
         <Header />
         <main className="container mx-auto px-4 py-8">
