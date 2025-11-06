@@ -109,7 +109,7 @@ export function PoliticianCard({
               )}
             </div>
 
-            {!comparisonMode && onToggleComparison && (
+            {onToggleComparison && (
               <Button
                 variant="outline"
                 size="sm"
