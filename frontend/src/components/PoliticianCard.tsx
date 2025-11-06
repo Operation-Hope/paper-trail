@@ -63,20 +63,30 @@ export function PoliticianCard({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <Card
-      className={`transition-all hover:shadow-md ${
+      role="button"
+      tabIndex={0}
+      className={`transition-all hover:shadow-md focus:ring-2 focus:ring-ring focus:outline-none ${
         isSelectedForComparison
           ? 'border-primary bg-primary/5 border-2'
           : 'hover:border-primary/50 cursor-pointer'
       }`}
       onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
     >
       <CardContent className="pt-6">
         <div className="flex gap-3">
-          {onToggleComparison && (
+          {onToggleComparison && comparisonMode && (
             <div
-              className={`flex items-start pt-1 ${comparisonMode ? 'visible' : 'invisible'}`}
+              className="flex items-start pt-1"
               onClick={handleCheckboxClick}
             >
               <Checkbox

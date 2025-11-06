@@ -2,12 +2,30 @@
  * Site-wide navigation header
  * Displays app branding, navigation links, and disclaimer
  */
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
+const DISCLAIMER_DISMISSED_KEY = 'paper-trail-disclaimer-dismissed';
+
 export default function Header() {
+  const [disclaimerDismissed, setDisclaimerDismissed] = useState(false);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem(DISCLAIMER_DISMISSED_KEY);
+    if (dismissed === 'true') {
+      setDisclaimerDismissed(true);
+    }
+  }, []);
+
+  const handleDismissDisclaimer = () => {
+    setDisclaimerDismissed(true);
+    localStorage.setItem(DISCLAIMER_DISMISSED_KEY, 'true');
+  };
+
   return (
-    <header className="bg-linear-to-r from-blue-900 to-blue-950 text-white shadow-lg transition-colors dark:from-gray-900 dark:to-gray-800">
+    <header className="bg-gradient-to-r from-blue-900 to-blue-950 text-white shadow-lg transition-colors dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -50,16 +68,6 @@ export default function Header() {
               >
                 Donors
               </NavLink>
-              <NavLink
-                to="/feedback"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'font-bold underline underline-offset-4'
-                    : 'underline-offset-4 hover:underline'
-                }
-              >
-                Feedback
-              </NavLink>
             </nav>
             <button
               onClick={() => {
@@ -82,13 +90,22 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="border-t border-yellow-700 bg-yellow-900/50 px-4 py-2 transition-colors dark:border-yellow-700 dark:bg-yellow-900/50">
-        <p className="text-center text-sm text-yellow-300 dark:text-yellow-300">
-          Disclaimer: This data is for informational purposes only. Data
-          accuracy is not guaranteed. Please verify all information with
-          official sources.
-        </p>
-      </div>
+      {!disclaimerDismissed && (
+        <div className="relative border-t border-yellow-700 bg-yellow-900/50 px-4 py-2 transition-colors dark:border-yellow-700 dark:bg-yellow-900/50">
+          <p className="text-center text-sm text-yellow-300 dark:text-yellow-300 pr-8">
+            Disclaimer: This data is for informational purposes only. Data
+            accuracy is not guaranteed. Please verify all information with
+            official sources.
+          </p>
+          <button
+            onClick={handleDismissDisclaimer}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-yellow-300 transition-colors hover:bg-yellow-800/50 hover:text-yellow-100"
+            aria-label="Dismiss disclaimer"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
     </header>
   );
 }

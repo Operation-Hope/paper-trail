@@ -1,11 +1,11 @@
 /**
  * Main application component with React Router setup
- * Defines routes for Unified Search and Feedback pages
+ * Defines routes for Unified Search
  */
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import UnifiedSearch from './pages/UnifiedSearch';
-import Feedback from './pages/Feedback';
+import NotFound from './pages/NotFound';
 import { CommandPalette } from './components/CommandPalette';
 import { Toaster } from './components/ui/sonner';
 import './index.css';
@@ -27,8 +27,8 @@ function AppContent() {
             <Route path="/donor" element={<UnifiedSearch />} />
             <Route path="/donor/:id" element={<UnifiedSearch />} />
 
-            {/* Other routes */}
-            <Route path="/feedback" element={<Feedback />} />
+            {/* Catch-all for 404 - must be last */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
