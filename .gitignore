@@ -59,7 +59,7 @@ instance/
 .cursor/
 .claude/
 .conductor/
-.conductor.json
+conductor.json
 
 # Temporary test screenshots
 .tmp/*.png
