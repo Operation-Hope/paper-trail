@@ -2,20 +2,20 @@
  * Main application component with React Router setup
  * Defines routes for Unified Search and Feedback pages
  */
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Header from './components/Header'
-import UnifiedSearch from './pages/UnifiedSearch'
-import Feedback from './pages/Feedback'
-import { CommandPalette } from './components/CommandPalette'
-import { Toaster } from './components/ui/sonner'
-import './index.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import UnifiedSearch from './pages/UnifiedSearch';
+import Feedback from './pages/Feedback';
+import { CommandPalette } from './components/CommandPalette';
+import { Toaster } from './components/ui/sonner';
+import './index.css';
 
 function AppContent() {
   return (
     <>
       <CommandPalette />
       <Toaster />
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="bg-background text-foreground min-h-screen">
         <Header />
         <main className="container mx-auto px-4 py-8">
           <Routes>
@@ -33,7 +33,7 @@ function AppContent() {
         </main>
       </div>
     </>
-  )
+  );
 }
 
 function App() {
@@ -41,7 +41,7 @@ function App() {
     <BrowserRouter>
       <AppContent />
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

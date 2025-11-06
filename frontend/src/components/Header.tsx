@@ -2,12 +2,12 @@
  * Site-wide navigation header
  * Displays app branding, navigation links, and disclaimer
  */
-import { NavLink } from 'react-router-dom'
-import { ThemeToggle } from './ThemeToggle'
+import { NavLink } from 'react-router-dom';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   return (
-    <header className="bg-gradient-to-r from-blue-900 to-blue-950 dark:from-gray-900 dark:to-gray-800 text-white shadow-lg transition-colors">
+    <header className="bg-gradient-to-r from-blue-900 to-blue-950 text-white shadow-lg transition-colors dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -17,7 +17,7 @@ export default function Header() {
                 alt="TYT Logo"
                 className="h-10 w-10"
                 onError={(e) => {
-                  e.currentTarget.style.visibility = 'hidden'
+                  e.currentTarget.style.visibility = 'hidden';
                 }}
               />
             </div>
@@ -35,7 +35,7 @@ export default function Header() {
                 className={({ isActive }) =>
                   isActive
                     ? 'font-bold underline underline-offset-4'
-                    : 'hover:underline underline-offset-4'
+                    : 'underline-offset-4 hover:underline'
                 }
               >
                 Politicians
@@ -45,7 +45,7 @@ export default function Header() {
                 className={({ isActive }) =>
                   isActive
                     ? 'font-bold underline underline-offset-4'
-                    : 'hover:underline underline-offset-4'
+                    : 'underline-offset-4 hover:underline'
                 }
               >
                 Donors
@@ -55,7 +55,7 @@ export default function Header() {
                 className={({ isActive }) =>
                   isActive
                     ? 'font-bold underline underline-offset-4'
-                    : 'hover:underline underline-offset-4'
+                    : 'underline-offset-4 hover:underline'
                 }
               >
                 Feedback
@@ -67,14 +67,14 @@ export default function Header() {
                   key: 'k',
                   metaKey: true,
                   bubbles: true,
-                })
-                document.dispatchEvent(event)
+                });
+                document.dispatchEvent(event);
               }}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs rounded-md border border-white/20 hover:bg-white/10 transition-colors"
+              className="hidden items-center gap-2 rounded-md border border-white/20 px-3 py-1.5 text-xs transition-colors hover:bg-white/10 sm:flex"
               title="Search (Cmd+K or Ctrl+K)"
             >
               <span>Search</span>
-              <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/20 rounded">
+              <kbd className="rounded bg-white/20 px-1.5 py-0.5 font-mono text-[10px]">
                 ⌘K
               </kbd>
             </button>
@@ -82,13 +82,13 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className="bg-yellow-900/50 dark:bg-yellow-900/50 border-t border-yellow-700 dark:border-yellow-700 px-4 py-2 transition-colors">
-        <p className="text-sm text-center text-yellow-300 dark:text-yellow-300">
+      <div className="border-t border-yellow-700 bg-yellow-900/50 px-4 py-2 transition-colors dark:border-yellow-700 dark:bg-yellow-900/50">
+        <p className="text-center text-sm text-yellow-300 dark:text-yellow-300">
           Disclaimer: This data is for informational purposes only. Data
           accuracy is not guaranteed. Please verify all information with
           official sources.
         </p>
       </div>
     </header>
-  )
+  );
 }

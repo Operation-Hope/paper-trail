@@ -2,20 +2,20 @@
  * Politician search results component using React 19 Suspense
  * Fetches and displays politician search results with useSuspenseQuery
  */
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { api } from '../services/api'
-import { queryKeys } from '../lib/query/keys'
-import { PoliticianCard } from './PoliticianCard'
-import { Card, CardContent } from './ui/card'
-import { Button } from './ui/button'
-import type { Politician } from '../types/api'
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
+import { PoliticianCard } from './PoliticianCard';
+import { Card, CardContent } from './ui/card';
+import { Button } from './ui/button';
+import type { Politician } from '../types/api';
 
 interface PoliticianSearchResultsProps {
-  searchQuery: string
-  comparisonPoliticians: Politician[]
-  onSelectPolitician: (politician: Politician) => void
-  onToggleComparison: (politician: Politician) => void
-  onClearComparison: () => void
+  searchQuery: string;
+  comparisonPoliticians: Politician[];
+  onSelectPolitician: (politician: Politician) => void;
+  onToggleComparison: (politician: Politician) => void;
+  onClearComparison: () => void;
 }
 
 export function PoliticianSearchResults({
@@ -30,18 +30,18 @@ export function PoliticianSearchResults({
     queryKey: queryKeys.politicians.search(searchQuery),
     queryFn: () => api.searchPoliticians(searchQuery),
     staleTime: 5 * 60 * 1000,
-  })
+  });
 
   if (politicians.length === 0) {
     return (
       <Card>
         <CardContent className="pt-6">
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-muted-foreground py-8 text-center">
             No politicians found matching "{searchQuery}"
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -55,7 +55,7 @@ export function PoliticianSearchResults({
           variant="outline"
           onClick={() => {
             if (comparisonPoliticians.length > 0) {
-              onClearComparison()
+              onClearComparison();
             }
           }}
         >
@@ -64,7 +64,7 @@ export function PoliticianSearchResults({
             : 'Compare Mode'}
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {politicians.map((politician) => (
           <PoliticianCard
             key={politician.politicianid}
@@ -79,5 +79,5 @@ export function PoliticianSearchResults({
         ))}
       </div>
     </div>
-  )
+  );
 }

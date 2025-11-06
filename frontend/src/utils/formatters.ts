@@ -13,7 +13,7 @@ export function formatCurrency(amount: number): string {
     currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount)
+  }).format(amount);
 }
 
 /**
@@ -24,9 +24,9 @@ export function formatCurrency(amount: number): string {
  */
 export function formatDate(dateString: string): string {
   try {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Invalid date'
+      return 'Invalid date';
     }
 
     return date.toLocaleDateString('en-US', {
@@ -34,8 +34,8 @@ export function formatDate(dateString: string): string {
       month: 'short',
       day: 'numeric',
       timeZone: 'UTC',
-    })
+    });
   } catch {
-    return 'Invalid date'
+    return 'Invalid date';
   }
 }

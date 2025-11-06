@@ -17,31 +17,31 @@
  * @property selectDonor - Function to select a donor and load their donations
  * @property clearSelection - Function to deselect current donor
  */
-import { useState, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '../services/api'
-import { queryKeys } from '../lib/query/keys'
-import type { Donor, Donation } from '../types/api'
+import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
+import type { Donor, Donation } from '../types/api';
 
 interface UseDonorSearchResult {
-  query: string
-  setQuery: (query: string) => void
-  donors: Donor[]
-  selectedDonor: Donor | null
-  donations: Donation[]
-  isSearching: boolean
-  isLoadingDonations: boolean
-  searchError: string | null
-  donationsError: string | null
-  search: (searchQuery?: string) => Promise<void>
-  selectDonor: (donor: Donor) => void
-  clearSelection: () => void
+  query: string;
+  setQuery: (query: string) => void;
+  donors: Donor[];
+  selectedDonor: Donor | null;
+  donations: Donation[];
+  isSearching: boolean;
+  isLoadingDonations: boolean;
+  searchError: string | null;
+  donationsError: string | null;
+  search: (searchQuery?: string) => Promise<void>;
+  selectDonor: (donor: Donor) => void;
+  clearSelection: () => void;
 }
 
 export function useDonorSearch(): UseDonorSearchResult {
-  const [query, setQuery] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null)
+  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
 
   // Use TanStack Query for donor search
   const {
@@ -53,7 +53,7 @@ export function useDonorSearch(): UseDonorSearchResult {
     queryFn: () => api.searchDonors(searchQuery),
     enabled: searchQuery.length >= 3,
     staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  });
 
   // Use TanStack Query for donations fetch
   const {
@@ -65,28 +65,28 @@ export function useDonorSearch(): UseDonorSearchResult {
     queryFn: () => api.getDonorDonations(selectedDonor!.donorid),
     enabled: selectedDonor !== null,
     staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  });
 
   const search = useCallback(
     async (searchQueryParam?: string) => {
-      const queryToSearch = searchQueryParam ?? query
+      const queryToSearch = searchQueryParam ?? query;
       if (queryToSearch.length < 3) {
-        setSearchQuery('')
-        return
+        setSearchQuery('');
+        return;
       }
 
-      setSearchQuery(queryToSearch)
+      setSearchQuery(queryToSearch);
     },
     [query]
-  )
+  );
 
   const selectDonor = useCallback((donor: Donor) => {
-    setSelectedDonor(donor)
-  }, [])
+    setSelectedDonor(donor);
+  }, []);
 
   const clearSelection = useCallback(() => {
-    setSelectedDonor(null)
-  }, [])
+    setSelectedDonor(null);
+  }, []);
 
   return {
     query,
@@ -109,5 +109,5 @@ export function useDonorSearch(): UseDonorSearchResult {
     search,
     selectDonor,
     clearSelection,
-  }
+  };
 }

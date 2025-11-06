@@ -2,11 +2,11 @@
  * Politician details view component
  * Displays comprehensive information including header, donation chart, and voting record
  */
-import { useState } from 'react'
-import { Button } from './ui/button'
-import { Card, CardContent } from './ui/card'
-import { Badge } from './ui/badge'
-import { Avatar, AvatarFallback } from './ui/avatar'
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,14 +14,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from './ui/breadcrumb'
-import { VoteRecord } from './VoteRecord'
-import DonationChart from './DonationChart'
-import type { Politician } from '../types/api'
+} from './ui/breadcrumb';
+import { VoteRecord } from './VoteRecord';
+import DonationChart from './DonationChart';
+import type { Politician } from '../types/api';
 
 interface PoliticianDetailsProps {
-  politician: Politician
-  onClose: () => void
+  politician: Politician;
+  onClose: () => void;
 }
 
 export function PoliticianDetails({
@@ -29,34 +29,34 @@ export function PoliticianDetails({
   onClose,
 }: PoliticianDetailsProps) {
   const [selectedSubjectForDonations, setSelectedSubjectForDonations] =
-    useState<string | null>(null)
+    useState<string | null>(null);
 
   const getPartyColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300'
+    if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300';
     if (party === 'Democratic')
-      return 'bg-blue-100 text-blue-800 border-blue-300'
-    return 'bg-gray-100 text-gray-800 border-gray-300'
-  }
+      return 'bg-blue-100 text-blue-800 border-blue-300';
+    return 'bg-gray-100 text-gray-800 border-gray-300';
+  };
 
   const getAvatarColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-500 text-white'
-    if (party === 'Democratic') return 'bg-blue-500 text-white'
-    return 'bg-gray-500 text-white'
-  }
+    if (party === 'Republican') return 'bg-red-500 text-white';
+    if (party === 'Democratic') return 'bg-blue-500 text-white';
+    return 'bg-gray-500 text-white';
+  };
 
   const getInitials = (firstname: string, lastname: string): string => {
-    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase()
-  }
+    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
+  };
 
   const handleSubjectClick = (subject: string | null) => {
-    setSelectedSubjectForDonations(subject)
-  }
+    setSelectedSubjectForDonations(subject);
+  };
 
   const handleDonationTitleClick = () => {
     if (selectedSubjectForDonations) {
-      setSelectedSubjectForDonations(null)
+      setSelectedSubjectForDonations(null);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -80,8 +80,8 @@ export function PoliticianDetails({
       {/* Header Section */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-4 flex-1">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex flex-1 items-center gap-4">
               <Avatar className={`size-20 ${getAvatarColor(politician.party)}`}>
                 <AvatarFallback
                   className={`text-2xl ${getAvatarColor(politician.party)}`}
@@ -91,7 +91,7 @@ export function PoliticianDetails({
               </Avatar>
 
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="mb-3 flex items-center gap-3">
                   <h1 className="text-3xl font-bold">
                     {politician.firstname} {politician.lastname}
                   </h1>
@@ -103,11 +103,11 @@ export function PoliticianDetails({
                   <Badge className={getPartyColor(politician.party)}>
                     {politician.party}
                   </Badge>
-                  <Badge variant="outline" className="text-base px-3 py-1">
+                  <Badge variant="outline" className="px-3 py-1 text-base">
                     {politician.state}
                   </Badge>
                   {politician.role && (
-                    <Badge variant="secondary" className="text-base px-3 py-1">
+                    <Badge variant="secondary" className="px-3 py-1 text-base">
                       {politician.role}
                     </Badge>
                   )}
@@ -122,7 +122,7 @@ export function PoliticianDetails({
       </Card>
 
       {/* Two-column layout: Donation Chart (left) and Vote Record (right) on desktop, stacked on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Donation Chart Section */}
         <DonationChart
           politicianId={politician.politicianid.toString()}
@@ -143,5 +143,5 @@ export function PoliticianDetails({
         />
       </div>
     </div>
-  )
+  );
 }

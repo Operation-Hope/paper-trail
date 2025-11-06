@@ -34,4 +34,4 @@ export const queryKeys = {
     all: ['bills'] as const,
     subjects: () => ['bills', 'subjects'] as const,
   },
-} as const
+} as const;

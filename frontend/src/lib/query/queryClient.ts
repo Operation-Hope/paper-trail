@@ -2,7 +2,7 @@
  * TanStack Query client configuration
  * Centralizes query caching, retry logic, and default options
  */
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,4 +29,4 @@ export const queryClient = new QueryClient({
       refetchOnMount: false,
     },
   },
-})
+});

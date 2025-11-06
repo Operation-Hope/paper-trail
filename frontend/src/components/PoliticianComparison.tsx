@@ -3,11 +3,11 @@
  * Displays two politicians side-by-side for direct comparison
  * Shows headers, donation charts, and voting records in parallel columns
  */
-import { useState } from 'react'
-import { Button } from './ui/button'
-import { Card, CardContent } from './ui/card'
-import { Badge } from './ui/badge'
-import { Avatar, AvatarFallback } from './ui/avatar'
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,45 +15,45 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from './ui/breadcrumb'
-import { VoteRecord } from './VoteRecord'
-import DonationChart from './DonationChart'
-import type { Politician } from '../types/api'
+} from './ui/breadcrumb';
+import { VoteRecord } from './VoteRecord';
+import DonationChart from './DonationChart';
+import type { Politician } from '../types/api';
 
 interface PoliticianComparisonProps {
-  politicians: [Politician, Politician]
-  onClose: () => void
+  politicians: [Politician, Politician];
+  onClose: () => void;
 }
 
 export function PoliticianComparison({
   politicians,
   onClose,
 }: PoliticianComparisonProps) {
-  const [politician1, politician2] = politicians
-  const [selectedSubject1, setSelectedSubject1] = useState<string | null>(null)
-  const [selectedSubject2, setSelectedSubject2] = useState<string | null>(null)
+  const [politician1, politician2] = politicians;
+  const [selectedSubject1, setSelectedSubject1] = useState<string | null>(null);
+  const [selectedSubject2, setSelectedSubject2] = useState<string | null>(null);
 
   const getPartyColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300'
+    if (party === 'Republican') return 'bg-red-100 text-red-800 border-red-300';
     if (party === 'Democratic')
-      return 'bg-blue-100 text-blue-800 border-blue-300'
-    return 'bg-gray-100 text-gray-800 border-gray-300'
-  }
+      return 'bg-blue-100 text-blue-800 border-blue-300';
+    return 'bg-gray-100 text-gray-800 border-gray-300';
+  };
 
   const getAvatarColor = (party: string): string => {
-    if (party === 'Republican') return 'bg-red-500 text-white'
-    if (party === 'Democratic') return 'bg-blue-500 text-white'
-    return 'bg-gray-500 text-white'
-  }
+    if (party === 'Republican') return 'bg-red-500 text-white';
+    if (party === 'Democratic') return 'bg-blue-500 text-white';
+    return 'bg-gray-500 text-white';
+  };
 
   const getInitials = (firstname: string, lastname: string): string => {
-    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase()
-  }
+    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
+  };
 
   const renderPoliticianHeader = (politician: Politician) => (
     <Card>
       <CardContent className="pt-6">
-        <div className="flex flex-col items-center text-center gap-3">
+        <div className="flex flex-col items-center gap-3 text-center">
           <Avatar className={`size-16 ${getAvatarColor(politician.party)}`}>
             <AvatarFallback
               className={`text-xl ${getAvatarColor(politician.party)}`}
@@ -62,8 +62,8 @@ export function PoliticianComparison({
             </AvatarFallback>
           </Avatar>
 
-          <div className="space-y-2 w-full">
-            <div className="flex items-center justify-center gap-2 flex-wrap">
+          <div className="w-full space-y-2">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <h2 className="text-2xl font-bold">
                 {politician.firstname} {politician.lastname}
               </h2>
@@ -72,7 +72,7 @@ export function PoliticianComparison({
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap justify-center gap-2">
               <Badge className={getPartyColor(politician.party)}>
                 {politician.party}
               </Badge>
@@ -89,7 +89,7 @@ export function PoliticianComparison({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className="space-y-6">
@@ -119,7 +119,7 @@ export function PoliticianComparison({
       </div>
 
       {/* Side-by-side politician headers */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {renderPoliticianHeader(politician1)}
         {renderPoliticianHeader(politician2)}
       </div>
@@ -127,7 +127,7 @@ export function PoliticianComparison({
       {/* Donation Charts - Side by Side */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold">Campaign Donations</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DonationChart
             politicianId={politician1.politicianid.toString()}
             selectedTopic={selectedSubject1 || undefined}
@@ -150,7 +150,7 @@ export function PoliticianComparison({
       {/* Vote Records - Side by Side */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold">Voting Records</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <VoteRecord
             politicianId={politician1.politicianid.toString()}
             selectedSubjectForDonations={selectedSubject1}
@@ -164,5 +164,5 @@ export function PoliticianComparison({
         </div>
       </div>
     </div>
-  )
+  );
 }

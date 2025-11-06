@@ -2,10 +2,10 @@
  * Multi-select combobox component
  * Allows searching and selecting multiple items from a list
  */
-import * as React from 'react'
-import { Check, ChevronsUpDown, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -13,23 +13,23 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
+} from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
 
 interface MultiSelectComboboxProps {
-  options: string[]
-  selected: string[]
-  onChange: (selected: string[]) => void
-  placeholder?: string
-  searchPlaceholder?: string
-  emptyText?: string
-  className?: string
-  isLoading?: boolean
+  options: string[];
+  selected: string[];
+  onChange: (selected: string[]) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyText?: string;
+  className?: string;
+  isLoading?: boolean;
 }
 
 export function MultiSelectCombobox({
@@ -42,23 +42,23 @@ export function MultiSelectCombobox({
   className,
   isLoading = false,
 }: MultiSelectComboboxProps) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleSelect = (value: string) => {
     const newSelected = selected.includes(value)
       ? selected.filter((item) => item !== value)
-      : [...selected, value]
-    onChange(newSelected)
-  }
+      : [...selected, value];
+    onChange(newSelected);
+  };
 
   const handleRemove = (value: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    onChange(selected.filter((item) => item !== value))
-  }
+    e.stopPropagation();
+    onChange(selected.filter((item) => item !== value));
+  };
 
   const handleClear = () => {
-    onChange([])
-  }
+    onChange([]);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -69,7 +69,7 @@ export function MultiSelectCombobox({
           aria-expanded={open}
           className={cn('w-full justify-between', className)}
         >
-          <div className="flex gap-1 flex-wrap flex-1 items-center">
+          <div className="flex flex-1 flex-wrap items-center gap-1">
             {selected.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
@@ -78,7 +78,7 @@ export function MultiSelectCombobox({
                   <Badge
                     key={item}
                     variant="secondary"
-                    className="mr-1 cursor-pointer hover:bg-secondary/80"
+                    className="hover:bg-secondary/80 mr-1 cursor-pointer"
                     onClick={(e) => handleRemove(item, e)}
                   >
                     {item}
@@ -103,7 +103,7 @@ export function MultiSelectCombobox({
               {selected.length > 0 && (
                 <CommandItem
                   onSelect={handleClear}
-                  className="justify-center text-center text-muted-foreground"
+                  className="text-muted-foreground justify-center text-center"
                 >
                   Clear all ({selected.length} selected)
                 </CommandItem>
@@ -114,10 +114,10 @@ export function MultiSelectCombobox({
                   value={option}
                   onSelect={() => handleSelect(option)}
                 >
-                  <div className="flex items-center gap-2 flex-1">
+                  <div className="flex flex-1 items-center gap-2">
                     <div
                       className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
                         selected.includes(option)
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50'
@@ -136,5 +136,5 @@ export function MultiSelectCombobox({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

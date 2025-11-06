@@ -2,39 +2,44 @@
  * Unified Search page with tabs for Politicians and Donors
  * Uses React 19 Suspense for declarative loading states
  */
-import { useEffect, useState, Suspense } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
-import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { usePoliticianSearch } from '../hooks/usePoliticianSearch'
-import { useDonorSearch } from '../hooks/useDonorSearch'
-import { useRouteState } from '../utils/routing'
-import { PoliticianSearchResults } from '../components/PoliticianSearchResults'
-import { DonorSearchResults } from '../components/DonorSearchResults'
-import { PoliticianDetails } from '../components/PoliticianDetails'
-import { PoliticianComparison } from '../components/PoliticianComparison'
-import { DonorDetails } from '../components/DonorDetails'
-import { ContributionHistory } from '../components/ContributionHistory'
-import { ErrorBoundary } from '../components/ErrorBoundary'
-import { api } from '../services/api'
-import type { Politician, Donor } from '../types/api'
+import { useEffect, useState, Suspense } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '../components/ui/tabs';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { usePoliticianSearch } from '../hooks/usePoliticianSearch';
+import { useDonorSearch } from '../hooks/useDonorSearch';
+import { useRouteState } from '../utils/routing';
+import { PoliticianSearchResults } from '../components/PoliticianSearchResults';
+import { DonorSearchResults } from '../components/DonorSearchResults';
+import { PoliticianDetails } from '../components/PoliticianDetails';
+import { PoliticianComparison } from '../components/PoliticianComparison';
+import { DonorDetails } from '../components/DonorDetails';
+import { ContributionHistory } from '../components/ContributionHistory';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { api } from '../services/api';
+import type { Politician, Donor } from '../types/api';
 
-type SearchType = 'politician' | 'donor'
+type SearchType = 'politician' | 'donor';
 
 export default function UnifiedSearch() {
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Determine active tab from URL
   const activeTab: SearchType = location.pathname.startsWith('/donor')
     ? 'donor'
-    : 'politician'
+    : 'politician';
 
   // Politician search state
-  const politicianSearch = usePoliticianSearch()
+  const politicianSearch = usePoliticianSearch();
   const {
     query: politicianQuery,
     setQuery: setPoliticianQuery,
@@ -50,10 +55,10 @@ export default function UnifiedSearch() {
     setComparisonPoliticians,
     clearSelection: clearPoliticianSelection,
     clearComparison,
-  } = politicianSearch
+  } = politicianSearch;
 
   // Donor search state
-  const donorSearch = useDonorSearch()
+  const donorSearch = useDonorSearch();
   const {
     query: donorQuery,
     setQuery: setDonorQuery,
@@ -64,7 +69,7 @@ export default function UnifiedSearch() {
     search: searchDonors,
     selectDonor,
     clearSelection: clearDonorSelection,
-  } = donorSearch
+  } = donorSearch;
 
   const {
     entityId,
@@ -74,63 +79,63 @@ export default function UnifiedSearch() {
     navigateToComparison,
     navigateToSearch,
     navigateBack,
-  } = useRouteState()
+  } = useRouteState();
 
   // Local input state for each search type
-  const [politicianInput, setPoliticianInput] = useState(politicianQuery)
-  const [donorInput, setDonorInput] = useState(donorQuery)
+  const [politicianInput, setPoliticianInput] = useState(politicianQuery);
+  const [donorInput, setDonorInput] = useState(donorQuery);
 
   // Sync input with query when query changes
   useEffect(() => {
-    setPoliticianInput(politicianQuery)
-  }, [politicianQuery])
+    setPoliticianInput(politicianQuery);
+  }, [politicianQuery]);
 
   useEffect(() => {
-    setDonorInput(donorQuery)
-  }, [donorQuery])
+    setDonorInput(donorQuery);
+  }, [donorQuery]);
 
   // Handle tab changes - clear results and navigate to appropriate URL
   const handleTabChange = (value: string) => {
-    const newTab = value as SearchType
+    const newTab = value as SearchType;
 
     // Navigate to the new tab's URL
     if (newTab === 'politician') {
-      navigate('/politician')
+      navigate('/politician');
     } else {
-      navigate('/donor')
+      navigate('/donor');
     }
-  }
+  };
 
   // Clear results when switching tabs
   useEffect(() => {
     if (activeTab === 'politician') {
       // Clear donor results when switching to politician
       if (selectedDonor) {
-        clearDonorSelection()
+        clearDonorSelection();
       }
     } else {
       // Clear politician results when switching to donor
       if (selectedPolitician) {
-        clearPoliticianSelection()
+        clearPoliticianSelection();
       }
       if (isComparing) {
-        clearComparison()
+        clearComparison();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab])
+  }, [activeTab]);
 
   // Hydrate politician state from URL
   useEffect(() => {
-    if (activeTab !== 'politician') return
+    if (activeTab !== 'politician') return;
 
     const loadFromUrl = async () => {
       // Handle comparison IDs from URL first
       if (comparisonIds.length >= 2) {
         const currentIds = comparisonPoliticians
           .map((p) => p.politicianid)
-          .sort()
-        const urlIds = [...comparisonIds].sort()
+          .sort();
+        const urlIds = [...comparisonIds].sort();
         // Only hydrate if the IDs don't match to avoid infinite loops
         if (
           currentIds.length !== urlIds.length ||
@@ -139,207 +144,209 @@ export default function UnifiedSearch() {
           try {
             const fetchedPoliticians = await Promise.all(
               comparisonIds.map((id) => api.getPolitician(id))
-            )
-            setComparisonPoliticians(fetchedPoliticians)
+            );
+            setComparisonPoliticians(fetchedPoliticians);
           } catch (err) {
-            console.error('Failed to load comparison from URL:', err)
+            console.error('Failed to load comparison from URL:', err);
             toast.error('Comparison not found', {
               description:
                 'The requested comparison could not be loaded. Please try searching again.',
-            })
-            navigate('/politician')
+            });
+            navigate('/politician');
           }
         }
-        return
+        return;
       }
 
       if (entityId) {
-        const politicianId = Number(entityId)
+        const politicianId = Number(entityId);
         if (selectedPolitician?.politicianid === politicianId) {
-          return
+          return;
         }
         const politician = politicians.find(
           (p) => p.politicianid === politicianId
-        )
+        );
         if (politician) {
-          selectPolitician(politician)
-          return
+          selectPolitician(politician);
+          return;
         }
         try {
-          const fetchedPolitician = await api.getPolitician(politicianId)
-          selectPolitician(fetchedPolitician)
+          const fetchedPolitician = await api.getPolitician(politicianId);
+          selectPolitician(fetchedPolitician);
         } catch (err) {
-          console.error('Failed to load politician from URL:', err)
+          console.error('Failed to load politician from URL:', err);
           toast.error('Politician not found', {
             description:
               'The requested politician could not be loaded. Please try searching again.',
-          })
-          navigate('/politician')
+          });
+          navigate('/politician');
         }
       } else {
         // No entityId in URL - clear selection if one exists (back button case)
         if (selectedPolitician) {
-          clearPoliticianSelection()
+          clearPoliticianSelection();
         }
         // Handle search query
         if (searchQuery && searchQuery !== politicianQuery) {
-          setPoliticianInput(searchQuery)
-          setPoliticianQuery(searchQuery)
+          setPoliticianInput(searchQuery);
+          setPoliticianQuery(searchQuery);
           if (searchQuery.length >= 2) {
-            searchPoliticians(searchQuery)
+            searchPoliticians(searchQuery);
           }
         }
       }
-    }
+    };
 
-    loadFromUrl()
+    loadFromUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityId, searchQuery, comparisonIds, activeTab])
+  }, [entityId, searchQuery, comparisonIds, activeTab]);
 
   // Hydrate donor state from URL
   useEffect(() => {
-    if (activeTab !== 'donor') return
+    if (activeTab !== 'donor') return;
 
     const loadFromUrl = async () => {
       if (entityId) {
-        const donorId = Number(entityId)
+        const donorId = Number(entityId);
         if (selectedDonor?.donorid === donorId) {
-          return
+          return;
         }
-        const donor = donors.find((d) => d.donorid === donorId)
+        const donor = donors.find((d) => d.donorid === donorId);
         if (donor) {
-          selectDonor(donor)
-          return
+          selectDonor(donor);
+          return;
         }
         try {
-          const fetchedDonor = await api.getDonor(donorId)
-          selectDonor(fetchedDonor)
+          const fetchedDonor = await api.getDonor(donorId);
+          selectDonor(fetchedDonor);
         } catch (err) {
-          console.error('Failed to load donor from URL:', err)
+          console.error('Failed to load donor from URL:', err);
           toast.error('Donor not found', {
             description:
               'The requested donor could not be loaded. Please try searching again.',
-          })
-          navigate('/donor')
+          });
+          navigate('/donor');
         }
       } else {
         // No entityId in URL - clear selection if one exists (back button case)
         if (selectedDonor) {
-          clearDonorSelection()
+          clearDonorSelection();
         }
         // Handle search query
         if (searchQuery && searchQuery !== donorQuery) {
-          setDonorInput(searchQuery)
-          setDonorQuery(searchQuery)
+          setDonorInput(searchQuery);
+          setDonorQuery(searchQuery);
           if (searchQuery.length >= 3) {
-            searchDonors(searchQuery)
+            searchDonors(searchQuery);
           }
         }
       }
-    }
+    };
 
-    loadFromUrl()
+    loadFromUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityId, searchQuery, activeTab])
+  }, [entityId, searchQuery, activeTab]);
 
   // Sync URL when comparison mode is activated
   useEffect(() => {
-    if (activeTab !== 'politician') return
+    if (activeTab !== 'politician') return;
 
     // Only sync if comparison mode is active and URL doesn't match
     if (isComparing && comparisonPoliticians.length === 2) {
-      const currentIds = comparisonPoliticians.map((p) => p.politicianid).sort()
-      const urlIds = [...comparisonIds].sort()
+      const currentIds = comparisonPoliticians
+        .map((p) => p.politicianid)
+        .sort();
+      const urlIds = [...comparisonIds].sort();
 
       // Update URL if IDs don't match
       if (
         urlIds.length !== currentIds.length ||
         !urlIds.every((id, idx) => id === currentIds[idx])
       ) {
-        navigateToComparison(currentIds)
+        navigateToComparison(currentIds);
       }
     } else if (!isComparing && comparisonIds.length > 0) {
       // Clear URL if comparison mode is deactivated but URL still has IDs
       // (This happens when clearComparison is called)
-      navigateToSearch('politician', politicianQuery || undefined)
+      navigateToSearch('politician', politicianQuery || undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isComparing, comparisonPoliticians, activeTab])
+  }, [isComparing, comparisonPoliticians, activeTab]);
 
   // Politician search handlers
   const handlePoliticianSearch = async (e?: React.FormEvent) => {
-    e?.preventDefault()
-    setPoliticianQuery(politicianInput)
+    e?.preventDefault();
+    setPoliticianQuery(politicianInput);
     if (politicianInput.length >= 2) {
-      await searchPoliticians(politicianInput)
-      navigateToSearch('politician', politicianInput)
+      await searchPoliticians(politicianInput);
+      navigateToSearch('politician', politicianInput);
     } else if (politicianInput.length === 0) {
-      navigateToSearch('politician')
+      navigateToSearch('politician');
     }
-  }
+  };
 
   const handlePoliticianInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setPoliticianInput(e.target.value)
-  }
+    setPoliticianInput(e.target.value);
+  };
 
   const handlePoliticianKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (e.key === 'Enter') {
-      e.preventDefault()
-      handlePoliticianSearch()
+      e.preventDefault();
+      handlePoliticianSearch();
     }
-  }
+  };
 
   const handleClearPoliticianSelection = () => {
-    clearPoliticianSelection()
-    navigateBack()
-  }
+    clearPoliticianSelection();
+    navigateBack();
+  };
 
   const handleClearComparison = () => {
-    clearComparison()
-    navigateToSearch('politician', politicianQuery || undefined)
-  }
+    clearComparison();
+    navigateToSearch('politician', politicianQuery || undefined);
+  };
 
   // Donor search handlers
   const handleDonorSearch = async (e?: React.FormEvent) => {
-    e?.preventDefault()
-    setDonorQuery(donorInput)
+    e?.preventDefault();
+    setDonorQuery(donorInput);
     if (donorInput.length >= 3) {
-      await searchDonors(donorInput)
-      navigateToSearch('donor', donorInput)
+      await searchDonors(donorInput);
+      navigateToSearch('donor', donorInput);
     } else if (donorInput.length === 0) {
-      navigateToSearch('donor')
+      navigateToSearch('donor');
     }
-  }
+  };
 
   const handleDonorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDonorInput(e.target.value)
-  }
+    setDonorInput(e.target.value);
+  };
 
   const handleDonorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      e.preventDefault()
-      handleDonorSearch()
+      e.preventDefault();
+      handleDonorSearch();
     }
-  }
+  };
 
   const handleClearDonorSelection = () => {
-    clearDonorSelection()
-    navigateBack()
-  }
+    clearDonorSelection();
+    navigateBack();
+  };
 
   // Wrapper to navigate to politician URL (let hydration useEffect handle selection)
   const handleSelectPolitician = (politician: Politician) => {
-    navigateToEntity(politician.politicianid, 'politician')
-  }
+    navigateToEntity(politician.politicianid, 'politician');
+  };
 
   // Wrapper to navigate to donor URL (let hydration useEffect handle selection)
   const handleSelectDonor = (donor: Donor) => {
-    navigateToEntity(donor.donorid, 'donor')
-  }
+    navigateToEntity(donor.donorid, 'donor');
+  };
 
   // If comparing politicians, show comparison view
   if (isComparing) {
@@ -355,7 +362,7 @@ export default function UnifiedSearch() {
           />
         </ErrorBoundary>
       </div>
-    )
+    );
   }
 
   // If politician is selected, show politician details
@@ -372,7 +379,7 @@ export default function UnifiedSearch() {
           />
         </ErrorBoundary>
       </div>
-    )
+    );
   }
 
   // If donor is selected, show donor details
@@ -390,7 +397,7 @@ export default function UnifiedSearch() {
         </ErrorBoundary>
         <ContributionHistory donorId={selectedDonor.donorid} />
       </div>
-    )
+    );
   }
 
   // Main search interface with tabs
@@ -408,7 +415,7 @@ export default function UnifiedSearch() {
           </CardHeader>
           <CardContent>
             <TabsContent value="politician" className="mt-0">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-4 text-sm">
                 Find politicians and explore their voting records and campaign
                 donations
               </p>
@@ -430,20 +437,20 @@ export default function UnifiedSearch() {
               </form>
 
               {politicianInput.length > 0 && politicianInput.length < 2 && (
-                <p className="text-sm text-amber-600 mt-2">
+                <p className="mt-2 text-sm text-amber-600">
                   Please enter at least 2 characters to search
                 </p>
               )}
 
               {politicianError && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-red-800 text-sm">{politicianError}</p>
+                <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3">
+                  <p className="text-sm text-red-800">{politicianError}</p>
                 </div>
               )}
             </TabsContent>
 
             <TabsContent value="donor" className="mt-0">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-4 text-sm">
                 Find donors and explore their contribution history to
                 politicians
               </p>
@@ -465,14 +472,14 @@ export default function UnifiedSearch() {
               </form>
 
               {donorInput.length > 0 && donorInput.length < 3 && (
-                <p className="text-sm text-amber-600 mt-2">
+                <p className="mt-2 text-sm text-amber-600">
                   Please enter at least 3 characters to search
                 </p>
               )}
 
               {donorSearchError && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-red-800 text-sm">{donorSearchError}</p>
+                <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3">
+                  <p className="text-sm text-red-800">{donorSearchError}</p>
                 </div>
               )}
             </TabsContent>
@@ -487,7 +494,7 @@ export default function UnifiedSearch() {
                 fallback={
                   <Card>
                     <CardContent className="pt-6">
-                      <div className="text-center py-8 text-muted-foreground">
+                      <div className="text-muted-foreground py-8 text-center">
                         Searching for politicians...
                       </div>
                     </CardContent>
@@ -514,7 +521,7 @@ export default function UnifiedSearch() {
                 fallback={
                   <Card>
                     <CardContent className="pt-6">
-                      <div className="text-center py-8 text-muted-foreground">
+                      <div className="text-muted-foreground py-8 text-center">
                         Searching for donors...
                       </div>
                     </CardContent>
@@ -531,5 +538,5 @@ export default function UnifiedSearch() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

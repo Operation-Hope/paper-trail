@@ -3,20 +3,20 @@
  * Shows name, party, state, role, and active status with clickable interaction
  * Supports comparison mode with checkbox selection
  */
-import { Card, CardContent } from './ui/card'
-import { Badge } from './ui/badge'
-import { Avatar, AvatarFallback } from './ui/avatar'
-import { Button } from './ui/button'
-import { Checkbox } from './ui/checkbox'
-import { GitCompare } from 'lucide-react'
-import type { Politician } from '../types/api'
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { GitCompare } from 'lucide-react';
+import type { Politician } from '../types/api';
 
 interface PoliticianCardProps {
-  politician: Politician
-  onSelect: (politician: Politician) => void
-  onToggleComparison?: (politician: Politician) => void
-  isSelectedForComparison?: boolean
-  comparisonMode?: boolean
+  politician: Politician;
+  onSelect: (politician: Politician) => void;
+  onToggleComparison?: (politician: Politician) => void;
+  isSelectedForComparison?: boolean;
+  comparisonMode?: boolean;
 }
 
 export function PoliticianCard({
@@ -29,45 +29,45 @@ export function PoliticianCard({
   const getPartyColor = (party: string): string => {
     // Muted but recognizable party colors
     if (party === 'Republican')
-      return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900'
+      return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-900';
     if (party === 'Democratic')
-      return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900'
-    return 'bg-muted text-muted-foreground border-border'
-  }
+      return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900';
+    return 'bg-muted text-muted-foreground border-border';
+  };
 
   const getAvatarColor = (party: string): string => {
     // Softer, desaturated avatar colors
     if (party === 'Republican')
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
     if (party === 'Democratic')
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-    return 'bg-muted text-muted-foreground'
-  }
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+    return 'bg-muted text-muted-foreground';
+  };
 
   const getInitials = (firstname: string, lastname: string): string => {
-    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase()
-  }
+    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
+  };
 
   const handleCardClick = () => {
     if (comparisonMode && onToggleComparison) {
-      onToggleComparison(politician)
+      onToggleComparison(politician);
     } else {
-      onSelect(politician)
+      onSelect(politician);
     }
-  }
+  };
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (onToggleComparison) {
-      onToggleComparison(politician)
+      onToggleComparison(politician);
     }
-  }
+  };
 
   return (
     <Card
       className={`transition-all hover:shadow-md ${
         isSelectedForComparison
-          ? 'border-primary border-2 bg-primary/5'
+          ? 'border-primary bg-primary/5 border-2'
           : 'hover:border-primary/50 cursor-pointer'
       }`}
       onClick={handleCardClick}
@@ -92,7 +92,7 @@ export function PoliticianCard({
             </AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 flex flex-col gap-2">
+          <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-start justify-between">
               <h3 className="text-lg font-semibold">
                 {politician.firstname} {politician.lastname}
@@ -100,7 +100,7 @@ export function PoliticianCard({
               {!politician.isactive && (
                 <Badge
                   variant="outline"
-                  className="text-xs text-muted-foreground"
+                  className="text-muted-foreground text-xs"
                 >
                   Inactive
                 </Badge>
@@ -130,8 +130,8 @@ export function PoliticianCard({
                 size="sm"
                 className="mt-2 w-fit"
                 onClick={(e) => {
-                  e.stopPropagation()
-                  onToggleComparison(politician)
+                  e.stopPropagation();
+                  onToggleComparison(politician);
                 }}
               >
                 <GitCompare className="size-4" />
@@ -142,5 +142,5 @@ export function PoliticianCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

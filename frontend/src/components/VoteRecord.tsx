@@ -2,9 +2,9 @@
  * Vote record component displaying paginated voting history with filtering
  * Shows votes in a table with pagination controls and subject filtering
  */
-import { Suspense } from 'react'
-import { useVotes, useBillSubjects } from '../hooks/useVotes'
-import { VoteFilters } from './VoteFilters'
+import { Suspense } from 'react';
+import { useVotes, useBillSubjects } from '../hooks/useVotes';
+import { VoteFilters } from './VoteFilters';
 import {
   Table,
   TableBody,
@@ -12,18 +12,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+} from './ui/table';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './ui/tooltip'
-import { Alert, AlertDescription, AlertTitle } from './ui/alert'
-import { Skeleton } from './ui/skeleton'
+} from './ui/tooltip';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Skeleton } from './ui/skeleton';
 import {
   Pagination,
   PaginationContent,
@@ -32,16 +32,16 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from './ui/pagination'
-import { X, Info, FileSearch } from 'lucide-react'
-import { formatDate } from '../utils/formatters'
-import { ErrorBoundary } from './ErrorBoundary'
-import type { Vote } from '../types/api'
+} from './ui/pagination';
+import { X, Info, FileSearch } from 'lucide-react';
+import { formatDate } from '../utils/formatters';
+import { ErrorBoundary } from './ErrorBoundary';
+import type { Vote } from '../types/api';
 
 interface VoteRecordProps {
-  politicianId: string
-  selectedSubjectForDonations?: string | null
-  onSubjectClick?: (subject: string | null) => void
+  politicianId: string;
+  selectedSubjectForDonations?: string | null;
+  onSubjectClick?: (subject: string | null) => void;
 }
 
 function VoteRecordContent({
@@ -59,50 +59,50 @@ function VoteRecordContent({
     setSortOrder,
     setBillType,
     setSubject,
-  } = useVotes({ politicianId })
+  } = useVotes({ politicianId });
 
-  const { data: availableSubjects } = useBillSubjects()
+  const { data: availableSubjects } = useBillSubjects();
 
   const getVoteColor = (vote: Vote['Vote']): string => {
     switch (vote) {
       case 'Yea':
-        return 'bg-green-100 text-green-800 border-green-300'
+        return 'bg-green-100 text-green-800 border-green-300';
       case 'Nay':
-        return 'bg-red-100 text-red-800 border-red-300'
+        return 'bg-red-100 text-red-800 border-red-300';
       case 'Present':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'Not Voting':
-        return 'bg-gray-100 text-gray-800 border-gray-300'
+        return 'bg-gray-100 text-gray-800 border-gray-300';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300'
+        return 'bg-gray-100 text-gray-800 border-gray-300';
     }
-  }
+  };
 
   const handleSubjectClick = (clickedSubject: string) => {
     // If clicking the same subject that's already selected for donations, deselect it
     if (selectedSubjectForDonations === clickedSubject && onSubjectClick) {
-      onSubjectClick(null)
+      onSubjectClick(null);
     } else {
       // Filter votes by this subject
-      setSubject(clickedSubject)
-      setCurrentPage(1)
+      setSubject(clickedSubject);
+      setCurrentPage(1);
       // Also filter donations by this subject
       if (onSubjectClick) {
-        onSubjectClick(clickedSubject)
+        onSubjectClick(clickedSubject);
       }
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       {/* Active Subject Filter Alert */}
       {selectedSubjectForDonations && (
-        <Alert className="bg-blue-50 border-blue-200">
+        <Alert className="border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertTitle className="text-blue-900">
             Filtering donations by: {selectedSubjectForDonations}
           </AlertTitle>
-          <AlertDescription className="text-blue-700 flex items-center justify-between">
+          <AlertDescription className="flex items-center justify-between text-blue-700">
             <span>
               Click on subject tags below to explore different topics, or clear
               the filter to see all donations.
@@ -110,10 +110,10 @@ function VoteRecordContent({
             <Button
               variant="ghost"
               size="sm"
-              className="ml-2 h-6 px-2 text-blue-600 hover:text-blue-900 hover:bg-blue-100"
+              className="ml-2 h-6 px-2 text-blue-600 hover:bg-blue-100 hover:text-blue-900"
               onClick={() => onSubjectClick && onSubjectClick(null)}
             >
-              <X className="h-4 w-4 mr-1" />
+              <X className="mr-1 h-4 w-4" />
               Clear filter
             </Button>
           </AlertDescription>
@@ -140,11 +140,11 @@ function VoteRecordContent({
       {!voteData || voteData.votes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-12 space-y-4">
-              <FileSearch className="h-16 w-16 mx-auto text-muted-foreground/50" />
+            <div className="space-y-4 py-12 text-center">
+              <FileSearch className="text-muted-foreground/50 mx-auto h-16 w-16" />
               <div>
-                <h3 className="font-semibold text-lg mb-2">No Votes Found</h3>
-                <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                <h3 className="mb-2 text-lg font-semibold">No Votes Found</h3>
+                <p className="text-muted-foreground mx-auto max-w-md text-sm">
                   No voting records match your current filters. Try adjusting
                   the bill type, subject, or sort order to see more results.
                 </p>
@@ -153,10 +153,10 @@ function VoteRecordContent({
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setBillType('')
-                  setSubject('')
-                  setSortOrder('DESC')
-                  setCurrentPage(1)
+                  setBillType('');
+                  setSubject('');
+                  setSortOrder('DESC');
+                  setCurrentPage(1);
                 }}
               >
                 Clear All Filters
@@ -193,7 +193,7 @@ function VoteRecordContent({
                         <TableCell className="max-w-md">
                           <div className="line-clamp-2">{vote.Title}</div>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-muted-foreground text-sm">
                           {formatDate(vote.DateIntroduced)}
                         </TableCell>
                         <TableCell>
@@ -206,12 +206,12 @@ function VoteRecordContent({
                                       variant="outline"
                                       className={`cursor-pointer transition-all duration-200 ${
                                         selectedSubjectForDonations === subj
-                                          ? 'bg-red-100 border-red-500 text-red-800 font-semibold shadow-sm'
-                                          : 'hover:bg-blue-50 hover:border-blue-400 hover:scale-105 hover:shadow-sm'
+                                          ? 'border-red-500 bg-red-100 font-semibold text-red-800 shadow-sm'
+                                          : 'hover:scale-105 hover:border-blue-400 hover:bg-blue-50 hover:shadow-sm'
                                       }`}
                                       onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleSubjectClick(subj)
+                                        e.stopPropagation();
+                                        handleSubjectClick(subj);
                                       }}
                                     >
                                       {subj}
@@ -247,7 +247,7 @@ function VoteRecordContent({
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-muted-foreground text-sm">
                     Page {voteData.pagination.currentPage} of{' '}
                     {voteData.pagination.totalPages} (
                     {voteData.pagination.totalVotes} votes)
@@ -292,7 +292,7 @@ function VoteRecordContent({
                       )
                         .filter((pageNum) => {
                           // Show pages within 2 of current page
-                          return Math.abs(pageNum - currentPage) <= 2
+                          return Math.abs(pageNum - currentPage) <= 2;
                         })
                         .map((pageNum) => (
                           <PaginationItem key={pageNum}>
@@ -349,7 +349,7 @@ function VoteRecordContent({
         </>
       )}
     </div>
-  )
+  );
 }
 
 // Loading fallback component
@@ -361,7 +361,7 @@ function VoteRecordSkeleton() {
           <CardTitle>Voting Record</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 mb-4">
+          <div className="mb-4 flex gap-4">
             <Skeleton className="h-10 w-32" />
             <Skeleton className="h-10 w-32" />
             <Skeleton className="h-10 w-32" />
@@ -415,7 +415,7 @@ function VoteRecordSkeleton() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 // Wrapper component with Suspense boundary
@@ -426,5 +426,5 @@ export function VoteRecord(props: VoteRecordProps) {
         <VoteRecordContent {...props} />
       </Suspense>
     </ErrorBoundary>
-  )
+  );
 }

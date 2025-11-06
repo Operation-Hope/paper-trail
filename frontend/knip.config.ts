@@ -3,8 +3,6 @@ import type { KnipConfig } from 'knip';
 const config: KnipConfig = {
   entry: [
     'src/main.tsx',
-    'vite.config.ts',
-    'vitest.config.ts',
     'src/**/*.test.ts',
     'src/**/*.test.tsx',
   ],
@@ -15,12 +13,10 @@ const config: KnipConfig = {
     '**/*.d.ts',
   ],
   ignoreDependencies: [
-    '@eslint/js',
     '@tailwindcss/forms',
     '@tailwindcss/typography',
-    '@tailwindcss/vite',
-    'globals',
     'shadcn',
+    'tailwindcss',
     'tw-animate-css',
   ],
   paths: {

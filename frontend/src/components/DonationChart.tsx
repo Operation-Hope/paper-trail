@@ -3,8 +3,8 @@
  * Displays donation breakdown by industry using Chart.js
  * Supports optional topic filtering for industry-specific analysis
  */
-import { Suspense } from 'react'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { Suspense } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,31 +13,31 @@ import {
   type TooltipItem,
   type ChartEvent,
   type ActiveElement,
-} from 'chart.js'
-import { Doughnut } from 'react-chartjs-2'
-import { api } from '../services/api'
-import { queryKeys } from '../lib/query/keys'
-import { Skeleton } from './ui/skeleton'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+} from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
+import { Skeleton } from './ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select'
-import { PieChart } from 'lucide-react'
-import { ErrorBoundary } from './ErrorBoundary'
-import { useTheme } from '../components/providers/theme-provider'
+} from './ui/select';
+import { PieChart } from 'lucide-react';
+import { ErrorBoundary } from './ErrorBoundary';
+import { useTheme } from '../components/providers/theme-provider';
 
 // CRITICAL: Register Chart.js components before use
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DonationChartProps {
-  politicianId: string
-  selectedTopic?: string
-  onTopicChange?: (topic: string) => void
-  onTitleClick?: () => void
+  politicianId: string;
+  selectedTopic?: string;
+  onTopicChange?: (topic: string) => void;
+  onTitleClick?: () => void;
 }
 
 const COLORS = [
@@ -51,7 +51,7 @@ const COLORS = [
   '#4CAF50', // Green
   '#795548', // Brown
   '#607D8B', // Blue Grey
-]
+];
 
 const TOPICS = [
   'Health',
@@ -63,7 +63,7 @@ const TOPICS = [
   'Education',
   'Agriculture',
   'Transportation',
-]
+];
 
 function DonationChartContent({
   politicianId,
@@ -71,7 +71,7 @@ function DonationChartContent({
   onTopicChange,
   onTitleClick,
 }: DonationChartProps) {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
   const { data: donations } = useSuspenseQuery({
     queryKey: selectedTopic
       ? queryKeys.politicians.donationsFiltered(politicianId, selectedTopic)
@@ -80,7 +80,7 @@ function DonationChartContent({
       selectedTopic
         ? api.getFilteredDonationSummary(Number(politicianId), selectedTopic)
         : api.getDonationSummary(Number(politicianId)),
-  })
+  });
 
   if (donations.length === 0) {
     return (
@@ -93,11 +93,11 @@ function DonationChartContent({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 space-y-4">
-            <PieChart className="h-16 w-16 mx-auto text-muted-foreground/50" />
+          <div className="space-y-4 py-12 text-center">
+            <PieChart className="text-muted-foreground/50 mx-auto h-16 w-16" />
             <div>
-              <h3 className="font-semibold text-lg mb-2">No Donation Data</h3>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              <h3 className="mb-2 text-lg font-semibold">No Donation Data</h3>
+              <p className="text-muted-foreground mx-auto max-w-md text-sm">
                 {selectedTopic
                   ? `No large donations found for "${selectedTopic}" related industries. Try selecting a different topic to explore other donation patterns.`
                   : 'No large donation records found for this politician in our database. This may indicate no reportable donations over the minimum threshold.'}
@@ -106,7 +106,7 @@ function DonationChartContent({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   const chartData = {
@@ -118,26 +118,26 @@ function DonationChartContent({
         borderWidth: 1,
       },
     ],
-  }
+  };
 
   const handleChartClick = (_event: ChartEvent, elements: ActiveElement[]) => {
-    if (!onTopicChange) return
+    if (!onTopicChange) return;
 
     if (elements.length > 0) {
-      const clickedIndex = elements[0].index
-      const clickedIndustry = donations[clickedIndex]?.industry
+      const clickedIndex = elements[0].index;
+      const clickedIndustry = donations[clickedIndex]?.industry;
 
       if (clickedIndustry) {
         // If clicking the currently selected industry, deselect it
         if (selectedTopic === clickedIndustry) {
-          onTopicChange('')
+          onTopicChange('');
         } else {
           // Find the topic that corresponds to this industry
-          onTopicChange(clickedIndustry)
+          onTopicChange(clickedIndustry);
         }
       }
     }
-  }
+  };
 
   const chartOptions = {
     responsive: true,
@@ -150,23 +150,23 @@ function DonationChartContent({
       tooltip: {
         callbacks: {
           label: (context: TooltipItem<'doughnut'>) => {
-            const label = context.label || ''
-            const value = context.parsed || 0
+            const label = context.label || '';
+            const value = context.parsed || 0;
             const total = context.dataset.data.reduce(
               (a: number, b: number) => a + b,
               0
-            )
-            const percentage = ((value / total) * 100).toFixed(1)
-            return `${label}: $${value.toLocaleString()} (${percentage}%)`
+            );
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${label}: $${value.toLocaleString()} (${percentage}%)`;
           },
         },
       },
     },
-  }
+  };
 
   const titleText = selectedTopic
     ? `Donation Summary (Filtered by: ${selectedTopic})`
-    : 'Donation Summary'
+    : 'Donation Summary';
 
   return (
     <Card>
@@ -184,7 +184,7 @@ function DonationChartContent({
           <div className="mb-6">
             <label
               htmlFor="topic-filter"
-              className="block mb-2 text-sm font-medium"
+              className="mb-2 block text-sm font-medium"
             >
               Filter by Topic:
             </label>
@@ -214,7 +214,7 @@ function DonationChartContent({
         )}
 
         <div
-          className="max-w-md mx-auto mb-2 cursor-pointer"
+          className="mx-auto mb-2 max-w-md cursor-pointer"
           role="img"
           aria-label="Doughnut chart showing donation breakdown by industry. Click on a segment to filter."
         >
@@ -222,22 +222,22 @@ function DonationChartContent({
         </div>
 
         {onTopicChange && (
-          <p className="text-xs text-center text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 text-center text-xs">
             💡 Click on a chart segment to filter by industry
           </p>
         )}
 
         <div className="mt-6">
-          <h4 className="font-semibold mb-3 text-sm">Total by Industry:</h4>
+          <h4 className="mb-3 text-sm font-semibold">Total by Industry:</h4>
           <div className="space-y-2">
             {donations.map((d, index) => (
               <div
                 key={index}
-                className="flex justify-between items-center text-sm"
+                className="flex items-center justify-between text-sm"
               >
                 <span className="flex items-center gap-2">
                   <span
-                    className="w-3 h-3 rounded-full"
+                    className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   ></span>
                   {d.industry || 'Unknown'}
@@ -251,7 +251,7 @@ function DonationChartContent({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Loading fallback component
@@ -259,15 +259,15 @@ function DonationChartSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="h-7 w-64 mx-auto" />
+        <Skeleton className="mx-auto h-7 w-64" />
       </CardHeader>
       <CardContent>
-        <div className="flex justify-center items-center py-8">
+        <div className="flex items-center justify-center py-8">
           <Skeleton className="h-64 w-64 rounded-full" />
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Wrapper component with Suspense boundary
@@ -278,5 +278,5 @@ export default function DonationChart(props: DonationChartProps) {
         <DonationChartContent {...props} />
       </Suspense>
     </ErrorBoundary>
-  )
+  );
 }

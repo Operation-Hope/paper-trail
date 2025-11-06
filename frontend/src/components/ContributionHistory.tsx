@@ -3,18 +3,18 @@
  * Displays a list of donations made by a donor using React 19 Suspense
  * Fetches and displays donation data with useSuspenseQuery
  */
-import { Suspense } from 'react'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { api } from '../services/api'
-import { queryKeys } from '../lib/query/keys'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Skeleton } from './ui/skeleton'
-import { ErrorBoundary } from './ErrorBoundary'
-import { formatCurrency, formatDate } from '../utils/formatters'
+import { Suspense } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+import { queryKeys } from '../lib/query/keys';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Skeleton } from './ui/skeleton';
+import { ErrorBoundary } from './ErrorBoundary';
+import { formatCurrency, formatDate } from '../utils/formatters';
 
 interface ContributionHistoryProps {
-  donorId: number
-  threshold?: number
+  donorId: number;
+  threshold?: number;
 }
 
 function ContributionHistoryContent({
@@ -25,9 +25,11 @@ function ContributionHistoryContent({
     queryKey: queryKeys.donors.donations(donorId),
     queryFn: () => api.getDonorDonations(donorId),
     staleTime: 5 * 60 * 1000,
-  })
+  });
 
-  const thresholdDisplay = threshold ? `(> $${threshold.toLocaleString()})` : ''
+  const thresholdDisplay = threshold
+    ? `(> $${threshold.toLocaleString()})`
+    : '';
 
   if (donations.length === 0) {
     return (
@@ -38,13 +40,13 @@ function ContributionHistoryContent({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground space-y-2">
+          <div className="text-muted-foreground space-y-2 py-8 text-center">
             <p className="font-medium">
               No large contributions found {thresholdDisplay} to politicians in
               our database.
             </p>
             <p className="text-sm">This donor may have:</p>
-            <ul className="text-sm text-left inline-block">
+            <ul className="inline-block text-left text-sm">
               <li>
                 • Made smaller contributions (under $
                 {threshold.toLocaleString()})
@@ -55,7 +57,7 @@ function ContributionHistoryContent({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -66,14 +68,14 @@ function ContributionHistoryContent({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-2">
+        <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-2">
           {donations.map((donation, index) => (
             <div
               key={index}
-              className="border-t border-border pt-3 pb-1 first:border-t-0 first:pt-0"
+              className="border-border border-t pt-3 pb-1 first:border-t-0 first:pt-0"
             >
-              <div className="flex justify-between items-center mb-1">
-                <p className="font-semibold text-foreground">
+              <div className="mb-1 flex items-center justify-between">
+                <p className="text-foreground font-semibold">
                   {donation.firstname} {donation.lastname} ({donation.party}-
                   {donation.state})
                 </p>
@@ -89,7 +91,7 @@ function ContributionHistoryContent({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Loading fallback component
@@ -98,17 +100,17 @@ function ContributionHistorySkeleton() {
     <Card>
       <CardHeader>
         <CardTitle className="text-center">
-          <Skeleton className="h-7 w-64 mx-auto" />
+          <Skeleton className="mx-auto h-7 w-64" />
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-2">
+        <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-2">
           {Array.from({ length: 8 }).map((_, idx) => (
             <div
               key={idx}
-              className="border-t border-border pt-3 pb-1 first:border-t-0 first:pt-0"
+              className="border-border border-t pt-3 pb-1 first:border-t-0 first:pt-0"
             >
-              <div className="flex justify-between items-center mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <Skeleton className="h-5 w-48" />
                 <Skeleton className="h-5 w-20" />
               </div>
@@ -118,7 +120,7 @@ function ContributionHistorySkeleton() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Wrapper component with Suspense boundary
@@ -129,5 +131,5 @@ export function ContributionHistory(props: ContributionHistoryProps) {
         <ContributionHistoryContent {...props} />
       </Suspense>
     </ErrorBoundary>
-  )
+  );
 }
