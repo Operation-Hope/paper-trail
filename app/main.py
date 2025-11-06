@@ -108,7 +108,16 @@ def get_politician(politician_id):
         if politician is None:
             return jsonify({"error": "Politician not found"}), 404
 
-        return jsonify(dict(politician))
+        # Format keys to lowercase to match the JavaScript
+        return jsonify({
+            "politicianid": politician['politicianid'],
+            "firstname": politician['firstname'],
+            "lastname": politician['lastname'],
+            "party": politician['party'],
+            "state": politician['state'],
+            "role": politician['role'],
+            "isactive": politician['isactive']
+        })
 
     except (Exception, psycopg2.Error) as e:
         print(f"Error fetching politician: {e}")
@@ -266,20 +275,32 @@ def get_politician_votes(politician_id):
         where_clauses = ["v.PoliticianID = %s"]
         params = [politician_id]
 
-        # --- NEW Bill Type Filter Logic ---
+        # Bill type mapping from frontend format to database format
+        BILL_TYPE_MAP = {
+            'hr': 'H.R.%',
+            's': 'S.%',
+            'hjres': 'H.J.Res.%',
+            'sjres': 'S.J.Res.%',
+            'hconres': 'H.Con.Res.%',
+            'sconres': 'S.Con.Res.%',
+            'hres': 'H.Res.%',
+            'sres': 'S.Res.%'
+        }
+
         if bill_types:
             # Build OR conditions for bill numbers starting with the types
-            # Example: "(b.BillNumber ILIKE 'hr %' OR b.BillNumber ILIKE 's %')"
+            # Example: "(b.BillNumber ILIKE 'H.R.%' OR b.BillNumber ILIKE 'S.%')"
             type_conditions = []
             for bill_type in bill_types:
-                # Add a condition like "b.BillNumber ILIKE %s"
-                type_conditions.append("b.BillNumber ILIKE %s")
-                # Add the corresponding pattern like 'hr %' to params
-                params.append(f"{bill_type}%")
-            
-            # Join the conditions with OR and wrap in parentheses
-            where_clauses.append(f"({' OR '.join(type_conditions)})")
-        # --- END NEW Bill Type Filter Logic ---
+                # Map lowercase type to actual bill number format
+                pattern = BILL_TYPE_MAP.get(bill_type.lower())
+                if pattern:
+                    type_conditions.append("b.BillNumber ILIKE %s")
+                    params.append(pattern)
+
+            # Only add filter if we have valid bill types
+            if type_conditions:
+                where_clauses.append(f"({' OR '.join(type_conditions)})")
 
         if bill_subjects:
             where_clauses.append("b.subjects && %s")
@@ -311,12 +332,17 @@ def get_politician_votes(politician_id):
 
         votes_list = []
         for row in votes_data:
+            # Convert date to ISO format string for consistent API response
+            date_introduced = row['dateintroduced']
+            if hasattr(date_introduced, 'isoformat'):
+                date_introduced = date_introduced.isoformat()
+
             votes_list.append({
                 "VoteID": row['voteid'],
                 "Vote": row['vote'],
                 "BillNumber": row['billnumber'],
                 "Title": row['title'],
-                "DateIntroduced": row['dateintroduced'],
+                "DateIntroduced": date_introduced,
                 "subjects": row['subjects']
             })
 
