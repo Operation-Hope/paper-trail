@@ -111,7 +111,7 @@ export function PoliticianCard({
 
             {onToggleComparison && (
               <Button
-                variant="outline"
+                variant={isSelectedForComparison ? "default" : "outline"}
                 size="sm"
                 className="mt-2 w-fit"
                 onClick={(e) => {
@@ -120,7 +120,7 @@ export function PoliticianCard({
                 }}
               >
                 <GitCompare className="size-4" />
-                Compare
+                {isSelectedForComparison ? "Selected" : "Compare"}
               </Button>
             )}
           </div>

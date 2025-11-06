@@ -21,6 +21,7 @@ interface UsePoliticianSearchResult {
   search: (searchQuery?: string) => Promise<void>;
   selectPolitician: (politician: Politician) => void;
   toggleComparison: (politician: Politician) => void;
+  setComparisonPoliticians: (politicians: Politician[]) => void;
   clearSelection: () => void;
   clearComparison: () => void;
 }
@@ -29,7 +30,7 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
   const [query, setQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPolitician, setSelectedPolitician] = useState<Politician | null>(null);
-  const [comparisonPoliticians, setComparisonPoliticians] = useState<Politician[]>([]);
+  const [comparisonPoliticians, setComparisonPoliticiansState] = useState<Politician[]>([]);
 
   // Use TanStack Query for search results
   const {
@@ -55,12 +56,12 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
 
   const selectPolitician = useCallback((politician: Politician) => {
     setSelectedPolitician(politician);
-    setComparisonPoliticians([]);
+    setComparisonPoliticiansState([]);
   }, []);
 
   const toggleComparison = useCallback((politician: Politician) => {
     setSelectedPolitician(null);
-    setComparisonPoliticians((prev) => {
+    setComparisonPoliticiansState((prev) => {
       const isSelected = prev.some((p) => p.politicianid === politician.politicianid);
       if (isSelected) {
         return prev.filter((p) => p.politicianid !== politician.politicianid);
@@ -77,7 +78,11 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
   }, []);
 
   const clearComparison = useCallback(() => {
-    setComparisonPoliticians([]);
+    setComparisonPoliticiansState([]);
+  }, []);
+
+  const setComparisonPoliticians = useCallback((politicians: Politician[]) => {
+    setComparisonPoliticiansState(politicians);
   }, []);
 
   const isComparing = comparisonPoliticians.length === 2;
@@ -94,6 +99,7 @@ export function usePoliticianSearch(): UsePoliticianSearchResult {
     search,
     selectPolitician,
     toggleComparison,
+    setComparisonPoliticians,
     clearSelection,
     clearComparison,
   };
