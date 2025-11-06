@@ -144,9 +144,7 @@ function DonationChartContent({
     maintainAspectRatio: true,
     onClick: handleChartClick,
     plugins: {
-      legend: {
-        position: 'bottom' as const,
-      },
+      legend: { position: 'bottom' as const },
       tooltip: {
         callbacks: {
           label: (context: TooltipItem<'doughnut'>) => {

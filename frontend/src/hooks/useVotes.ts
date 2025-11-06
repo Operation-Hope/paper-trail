@@ -55,10 +55,7 @@ export function useVotes({ politicianId }: UseVotesParams): UseVotesResult {
       filters
     ),
     queryFn: async () => {
-      const params: VoteParams = {
-        page: currentPage,
-        sort: sortOrder,
-      };
+      const params: VoteParams = { page: currentPage, sort: sortOrder };
 
       if (filters.types) {
         params.type =

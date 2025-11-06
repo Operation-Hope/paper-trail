@@ -25,17 +25,11 @@ export class ErrorBoundary extends Component<
 > {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-    };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return {
-      hasError: true,
-      error,
-    };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -43,10 +37,7 @@ export class ErrorBoundary extends Component<
   }
 
   handleReset = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-    });
+    this.setState({ hasError: false, error: null });
     this.props.onReset?.();
   };
 
