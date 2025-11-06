@@ -173,10 +173,6 @@ export default function UnifiedSearch() {
         if (selectedPolitician) {
           clearPoliticianSelection();
         }
-        // Clear comparison if URL doesn't have comparison IDs
-        if (comparisonPoliticians.length > 0) {
-          clearComparison();
-        }
         // Handle search query
         if (searchQuery && searchQuery !== politicianQuery) {
           setPoliticianInput(searchQuery);
