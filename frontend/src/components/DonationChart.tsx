@@ -28,7 +28,7 @@ import {
 } from './ui/select';
 import { PieChart } from 'lucide-react';
 import { ErrorBoundary } from './ErrorBoundary';
-import { useTheme } from '../components/providers/use-theme';
+import { useTheme } from '../components/providers';
 
 // CRITICAL: Register Chart.js components before use
 ChartJS.register(ArcElement, Tooltip, Legend);
