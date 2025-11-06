@@ -1,7 +1,7 @@
 import os
 import zipfile
 import io
-import csv # <--- Make sure this is imported
+import csv
 import psycopg2
 import time
 import requests
@@ -10,10 +10,9 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 import app.config as config  # Imports your configuration file
 import traceback
-import sys # <--- ADD THIS IMPORT
+import sys
 
 # --- INCREASE CSV FIELD SIZE LIMIT ---
-# ADD THESE TWO LINES:
 max_int = sys.maxsize
 csv.field_size_limit(max_int)
 # --- END ADDITION ---
@@ -247,7 +246,16 @@ def process_pas2_files(conn, cur, fec_folder_path):
                         try:
                             record = dict(zip(PAS2_HEADERS, row))
                             amount = float(record.get('TRANSACTION_AMT', 0))
-                            if amount <= 2000.0: continue
+
+                            # --- REVISED FILTER FOR ACCURACY ---
+                            # Only include donations > $2000
+                            # AND where the transaction type is '24K' (Contribution to Candidate)
+                            # This excludes independent expenditures (24E, 24N, etc.)
+                            transaction_type = record.get('TRANSACTION_TP', '').upper()
+                            if amount <= 2000.0 or transaction_type != '24K':
+                                continue
+                            # --- END REVISION ---
+
                             date = parse_fec_date(record.get('TRANSACTION_DT')); fec_cmte_id = record.get('CMTE_ID'); fec_cand_id = record.get('CAND_ID')
                             politician_id = fec_id_to_politician_id_lookup.get(fec_cand_id)
                             if not politician_id: continue
@@ -261,7 +269,7 @@ def process_pas2_files(conn, cur, fec_folder_path):
                         except: continue
         except Exception as e: print(f"  Error processing {filename}: {e}"); continue
 
-        print(f"\n  Finished reading {filename}. Found {len(donations_to_process)} donations > $2000.")
+        print(f"\n  Finished reading {filename}. Found {len(donations_to_process)} direct donations > $2000.")
 
         update_donor_lookup(conn, cur, new_donor_keys)
 
