@@ -4,6 +4,7 @@
  * Shows headers, donation charts, and voting records in parallel columns
  */
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
@@ -97,8 +98,8 @@ export function PoliticianComparison({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink onClick={onClose} className="cursor-pointer">
-              Politicians
+            <BreadcrumbLink asChild>
+              <Link to="/politician">Politicians</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

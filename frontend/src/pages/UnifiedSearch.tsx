@@ -182,9 +182,12 @@ export default function UnifiedSearch() {
           navigate('/politician');
         }
       } else {
-        // No entityId in URL - clear selection if one exists (back button case)
+        // No entityId or comparisonIds in URL - clear selection/comparison if one exists (back button case)
         if (selectedPolitician) {
           clearPoliticianSelection();
+        }
+        if (isComparing) {
+          clearComparison();
         }
         // Handle search query
         if (searchQuery && searchQuery !== politicianQuery) {
@@ -247,31 +250,6 @@ export default function UnifiedSearch() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityId, searchQuery, activeTab]);
 
-  // Sync URL when comparison mode is activated
-  useEffect(() => {
-    if (activeTab !== 'politician') return;
-
-    // Only sync if comparison mode is active and URL doesn't match
-    if (isComparing && comparisonPoliticians.length === 2) {
-      const currentIds = comparisonPoliticians
-        .map((p) => p.politicianid)
-        .sort();
-      const urlIds = [...comparisonIds].sort();
-
-      // Update URL if IDs don't match
-      if (
-        urlIds.length !== currentIds.length ||
-        !urlIds.every((id, idx) => id === currentIds[idx])
-      ) {
-        navigateToComparison(currentIds);
-      }
-    } else if (!isComparing && comparisonIds.length > 0) {
-      // Clear URL if comparison mode is deactivated but URL still has IDs
-      // (This happens when clearComparison is called)
-      navigateToSearch('politician', politicianQuery || undefined);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isComparing, comparisonPoliticians, activeTab]);
 
   // Politician search handlers
   const handlePoliticianSearch = async (e?: React.FormEvent) => {
@@ -346,6 +324,35 @@ export default function UnifiedSearch() {
   // Wrapper to navigate to donor URL (let hydration useEffect handle selection)
   const handleSelectDonor = (donor: Donor) => {
     navigateToEntity(donor.donorid, 'donor');
+  };
+
+  // Wrapper for toggleComparison that updates URL when comparison becomes active
+  const handleToggleComparison = (politician: Politician) => {
+    toggleComparison(politician);
+    // Navigate to comparison URL after state update
+    // Use setTimeout to ensure state has updated
+    setTimeout(() => {
+      if (comparisonPoliticians.length === 1) {
+        // User just selected second politician, navigate to comparison URL
+        const newComparison = [...comparisonPoliticians, politician];
+        const ids = newComparison.map((p) => p.politicianid);
+        navigateToComparison(ids);
+      } else if (comparisonPoliticians.length === 2) {
+        // User is replacing one politician or deselecting
+        const isDeselecting = comparisonPoliticians.some(
+          (p) => p.politicianid === politician.politicianid
+        );
+        if (!isDeselecting) {
+          // Replacing - update URL with new IDs
+          const newComparison = [comparisonPoliticians[1], politician];
+          const ids = newComparison.map((p) => p.politicianid);
+          navigateToComparison(ids);
+        } else {
+          // Deselecting - stay on search page
+          navigateToSearch('politician', politicianQuery || undefined);
+        }
+      }
+    }, 0);
   };
 
   // If comparing politicians, show comparison view
@@ -505,7 +512,7 @@ export default function UnifiedSearch() {
                   searchQuery={politicianQuery}
                   comparisonPoliticians={comparisonPoliticians}
                   onSelectPolitician={handleSelectPolitician}
-                  onToggleComparison={toggleComparison}
+                  onToggleComparison={handleToggleComparison}
                   onClearComparison={handleClearComparison}
                 />
               </Suspense>

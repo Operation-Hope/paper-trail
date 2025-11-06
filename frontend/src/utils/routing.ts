@@ -96,7 +96,7 @@ export function useRouteState(): RouteState {
 
   const navigateToComparison = useCallback(
     (ids: number[]) => {
-      navigate(buildComparisonUrl(ids), { replace: true });
+      navigate(buildComparisonUrl(ids));
     },
     [navigate]
   );
