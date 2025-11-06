@@ -3,28 +3,31 @@
  * Displays a list of donations made by a donor using React 19 Suspense
  * Fetches and displays donation data with useSuspenseQuery
  */
-import { Suspense } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { queryKeys } from '../lib/query/keys';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Skeleton } from './ui/skeleton';
-import { ErrorBoundary } from './ErrorBoundary';
-import { formatCurrency, formatDate } from '../utils/formatters';
+import { Suspense } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { api } from '../services/api'
+import { queryKeys } from '../lib/query/keys'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Skeleton } from './ui/skeleton'
+import { ErrorBoundary } from './ErrorBoundary'
+import { formatCurrency, formatDate } from '../utils/formatters'
 
 interface ContributionHistoryProps {
-  donorId: number;
-  threshold?: number;
+  donorId: number
+  threshold?: number
 }
 
-function ContributionHistoryContent({ donorId, threshold = 2000 }: ContributionHistoryProps) {
+function ContributionHistoryContent({
+  donorId,
+  threshold = 2000,
+}: ContributionHistoryProps) {
   const { data: donations } = useSuspenseQuery({
     queryKey: queryKeys.donors.donations(donorId),
     queryFn: () => api.getDonorDonations(donorId),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
-  const thresholdDisplay = threshold ? `(> $${threshold.toLocaleString()})` : '';
+  const thresholdDisplay = threshold ? `(> $${threshold.toLocaleString()})` : ''
 
   if (donations.length === 0) {
     return (
@@ -37,20 +40,22 @@ function ContributionHistoryContent({ donorId, threshold = 2000 }: ContributionH
         <CardContent>
           <div className="text-center py-8 text-muted-foreground space-y-2">
             <p className="font-medium">
-              No large contributions found {thresholdDisplay} to politicians in our database.
+              No large contributions found {thresholdDisplay} to politicians in
+              our database.
             </p>
-            <p className="text-sm">
-              This donor may have:
-            </p>
+            <p className="text-sm">This donor may have:</p>
             <ul className="text-sm text-left inline-block">
-              <li>• Made smaller contributions (under ${threshold.toLocaleString()})</li>
+              <li>
+                • Made smaller contributions (under $
+                {threshold.toLocaleString()})
+              </li>
               <li>• Not contributed to politicians we track</li>
               <li>• Contributed only to state/local politicians</li>
             </ul>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -69,7 +74,8 @@ function ContributionHistoryContent({ donorId, threshold = 2000 }: ContributionH
             >
               <div className="flex justify-between items-center mb-1">
                 <p className="font-semibold text-foreground">
-                  {donation.firstname} {donation.lastname} ({donation.party}-{donation.state})
+                  {donation.firstname} {donation.lastname} ({donation.party}-
+                  {donation.state})
                 </p>
                 <p className="font-bold text-green-600">
                   {formatCurrency(donation.amount)}
@@ -83,7 +89,7 @@ function ContributionHistoryContent({ donorId, threshold = 2000 }: ContributionH
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // Loading fallback component
@@ -112,7 +118,7 @@ function ContributionHistorySkeleton() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // Wrapper component with Suspense boundary
@@ -123,5 +129,5 @@ export function ContributionHistory(props: ContributionHistoryProps) {
         <ContributionHistoryContent {...props} />
       </Suspense>
     </ErrorBoundary>
-  );
+  )
 }

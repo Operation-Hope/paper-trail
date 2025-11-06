@@ -2,7 +2,7 @@
  * Feedback page
  * Allows users to submit feedback about the application
  */
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 
 export default function Feedback() {
   return (
@@ -15,10 +15,11 @@ export default function Feedback() {
           We value your feedback and suggestions!
         </p>
         <p className="text-muted-foreground">
-          This feedback form is currently under development. For now, please contact
-          us directly with any questions, comments, or suggestions about Paper Trail.
+          This feedback form is currently under development. For now, please
+          contact us directly with any questions, comments, or suggestions about
+          Paper Trail.
         </p>
       </CardContent>
     </Card>
-  );
+  )
 }

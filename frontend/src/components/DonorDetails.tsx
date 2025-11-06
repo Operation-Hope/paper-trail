@@ -5,46 +5,59 @@
  * @param donor - The donor object containing name, type, employer, and state
  * @param onClose - Callback fired when the back button is clicked to return to search
  */
-import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
-import type { Donor } from '../types/api';
+import { Card, CardContent } from './ui/card'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from './ui/breadcrumb'
+import { Separator } from './ui/separator'
+import type { Donor } from '../types/api'
 
 interface DonorDetailsProps {
-  donor: Donor;
-  onClose: () => void;
+  donor: Donor
+  onClose: () => void
 }
 
 export function DonorDetails({ donor, onClose }: DonorDetailsProps) {
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <Button
-          variant="link"
-          onClick={onClose}
-          className="mb-4 p-0 text-primary hover:text-primary/80"
-        >
-          ← Back to search results
-        </Button>
+    <>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink onClick={onClose} className="cursor-pointer">
+              Donors
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{donor.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-        <div className="text-center border-b border-border pb-4">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
-            {donor.name}
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            {donor.donortype}
-          </p>
-          {donor.employer && (
-            <p className="text-sm text-gray-500 mt-1">
-              Employer: {donor.employer}
-            </p>
-          )}
-          {donor.state && (
-            <p className="text-sm text-gray-500">
-              State: {donor.state}
-            </p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="text-center pb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-2">
+              {donor.name}
+            </h2>
+            <p className="text-lg text-muted-foreground">{donor.donortype}</p>
+            {donor.employer && (
+              <p className="text-sm text-gray-500 mt-1">
+                Employer: {donor.employer}
+              </p>
+            )}
+            {donor.state && (
+              <p className="text-sm text-gray-500">State: {donor.state}</p>
+            )}
+          </div>
+          <Separator />
+        </CardContent>
+      </Card>
+    </>
+  )
 }

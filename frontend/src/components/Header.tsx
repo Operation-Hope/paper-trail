@@ -2,8 +2,8 @@
  * Site-wide navigation header
  * Displays app branding, navigation links, and disclaimer
  */
-import { NavLink } from 'react-router-dom';
-import { ThemeToggle } from './ThemeToggle';
+import { NavLink } from 'react-router-dom'
+import { ThemeToggle } from './ThemeToggle'
 
 export default function Header() {
   return (
@@ -17,13 +17,15 @@ export default function Header() {
                 alt="TYT Logo"
                 className="h-10 w-10"
                 onError={(e) => {
-                  e.currentTarget.style.visibility = 'hidden';
+                  e.currentTarget.style.visibility = 'hidden'
                 }}
               />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Paper Trail</h1>
-              <p className="text-xs text-blue-100 dark:text-gray-400">by The People</p>
+              <p className="text-xs text-blue-100 dark:text-gray-400">
+                by The People
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-6">
@@ -65,14 +67,16 @@ export default function Header() {
                   key: 'k',
                   metaKey: true,
                   bubbles: true,
-                });
-                document.dispatchEvent(event);
+                })
+                document.dispatchEvent(event)
               }}
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs rounded-md border border-white/20 hover:bg-white/10 transition-colors"
               title="Search (Cmd+K or Ctrl+K)"
             >
               <span>Search</span>
-              <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/20 rounded">⌘K</kbd>
+              <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/20 rounded">
+                ⌘K
+              </kbd>
             </button>
             <ThemeToggle />
           </div>
@@ -80,11 +84,11 @@ export default function Header() {
       </div>
       <div className="bg-yellow-900/50 dark:bg-yellow-900/50 border-t border-yellow-700 dark:border-yellow-700 px-4 py-2 transition-colors">
         <p className="text-sm text-center text-yellow-300 dark:text-yellow-300">
-          Disclaimer: This data is for informational purposes only.
-          Data accuracy is not guaranteed. Please verify all information
-          with official sources.
+          Disclaimer: This data is for informational purposes only. Data
+          accuracy is not guaranteed. Please verify all information with
+          official sources.
         </p>
       </div>
     </header>
-  );
+  )
 }

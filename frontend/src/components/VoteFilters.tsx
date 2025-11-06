@@ -2,23 +2,36 @@
  * Vote filtering UI component
  * Provides bill type, subject, and sort order filtering controls
  */
-import { useState } from 'react';
-import { Button } from './ui/button';
-import { Checkbox } from './ui/checkbox';
-import { Label } from './ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
-import { ChevronDown, ChevronUp, Filter } from 'lucide-react';
-import { Badge } from './ui/badge';
+import { useState } from 'react'
+import { Button } from './ui/button'
+import { Checkbox } from './ui/checkbox'
+import { Label } from './ui/label'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible'
+import { ChevronDown, ChevronUp, Filter } from 'lucide-react'
+import { Badge } from './ui/badge'
+import { MultiSelectCombobox } from './ui/multi-select-combobox'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
+import { Separator } from './ui/separator'
 
 interface VoteFiltersProps {
-  billType: string;
-  setBillType: (type: string) => void;
-  subject: string;
-  setSubject: (subject: string) => void;
-  sortOrder: 'ASC' | 'DESC';
-  setSortOrder: (order: 'ASC' | 'DESC') => void;
-  availableSubjects: string[];
-  isLoadingSubjects: boolean;
+  billType: string
+  setBillType: (type: string) => void
+  subject: string
+  setSubject: (subject: string) => void
+  sortOrder: 'ASC' | 'DESC'
+  setSortOrder: (order: 'ASC' | 'DESC') => void
+  availableSubjects: string[]
+  isLoadingSubjects?: boolean
 }
 
 export function VoteFilters({
@@ -29,67 +42,53 @@ export function VoteFilters({
   sortOrder,
   setSortOrder,
   availableSubjects,
-  isLoadingSubjects,
+  isLoadingSubjects = false,
 }: VoteFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   const billTypes = [
     { id: 'hr', label: 'House (HR)' },
     { id: 's', label: 'Senate (S)' },
     { id: 'hjres', label: 'HJRes (House Joint)' },
     { id: 'sjres', label: 'SJRes (Senate Joint)' },
-  ];
+  ]
 
   const handleBillTypeChange = (type: string, checked: boolean) => {
-    const currentTypes = billType.split(',').filter(Boolean);
+    const currentTypes = billType.split(',').filter(Boolean)
 
     if (checked) {
       // Add the type
-      const newTypes = [...currentTypes, type];
-      setBillType(newTypes.join(','));
+      const newTypes = [...currentTypes, type]
+      setBillType(newTypes.join(','))
     } else {
       // Remove the type
-      const newTypes = currentTypes.filter(t => t !== type);
-      setBillType(newTypes.join(','));
+      const newTypes = currentTypes.filter((t) => t !== type)
+      setBillType(newTypes.join(','))
     }
-  };
+  }
 
   const isBillTypeChecked = (type: string): boolean => {
-    return billType.split(',').includes(type);
-  };
+    return billType.split(',').includes(type)
+  }
 
-  const handleSubjectChange = (subj: string, checked: boolean) => {
-    const currentSubjects = subject.split(',').filter(Boolean);
-
-    if (checked) {
-      // Add the subject
-      const newSubjects = [...currentSubjects, subj];
-      setSubject(newSubjects.join(','));
-    } else {
-      // Remove the subject
-      const newSubjects = currentSubjects.filter(s => s !== subj);
-      setSubject(newSubjects.join(','));
-    }
-  };
-
-  const isSubjectChecked = (subj: string): boolean => {
-    return subject.split(',').includes(subj);
-  };
+  const handleSubjectChange = (selectedSubjects: string[]) => {
+    setSubject(selectedSubjects.join(','))
+  }
 
   const clearFilters = () => {
-    setBillType('');
-    setSubject('');
-    setSortOrder('DESC');
-  };
+    setBillType('')
+    setSubject('')
+    setSortOrder('DESC')
+  }
 
   // Count active filters
   const activeFilterCount = (() => {
-    let count = 0;
-    if (billType) count += billType.split(',').filter(Boolean).length;
-    if (subject) count += subject.split(',').filter(Boolean).length;
-    if (sortOrder !== 'DESC') count += 1;
-    return count;
-  })();
+    let count = 0
+    if (billType) count += billType.split(',').filter(Boolean).length
+    if (subject) count += subject.split(',').filter(Boolean).length
+    if (sortOrder !== 'DESC') count += 1
+    return count
+  })()
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
@@ -140,57 +139,39 @@ export function VoteFilters({
           </div>
         </div>
 
+        <Separator />
+
         {/* Subject Filter */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Bill Subjects</Label>
-          {isLoadingSubjects ? (
-            <div className="text-sm text-muted-foreground">Loading subjects...</div>
-          ) : (
-            <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1 bg-background">
-              {availableSubjects.length === 0 ? (
-                <div className="text-sm text-muted-foreground">No subjects available</div>
-              ) : (
-                availableSubjects.map((subj) => (
-                  <div key={subj} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`subject-${subj}`}
-                      checked={isSubjectChecked(subj)}
-                      onCheckedChange={(checked) =>
-                        handleSubjectChange(subj, checked === true)
-                      }
-                    />
-                    <Label
-                      htmlFor={`subject-${subj}`}
-                      className="text-sm cursor-pointer flex-1"
-                    >
-                      {subj}
-                    </Label>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
+          <MultiSelectCombobox
+            options={availableSubjects}
+            selected={subject.split(',').filter(Boolean)}
+            onChange={handleSubjectChange}
+            placeholder="Select subjects..."
+            searchPlaceholder="Search subjects..."
+            emptyText="No subjects available"
+            isLoading={isLoadingSubjects}
+          />
         </div>
+
+        <Separator />
 
         {/* Sort Order */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Sort Order</Label>
-          <div className="flex gap-2">
-            <Button
-              variant={sortOrder === 'DESC' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSortOrder('DESC')}
-            >
-              Newest First
-            </Button>
-            <Button
-              variant={sortOrder === 'ASC' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSortOrder('ASC')}
-            >
-              Oldest First
-            </Button>
-          </div>
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => setSortOrder(value as 'ASC' | 'DESC')}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select sort order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="DESC">Newest First</SelectItem>
+              <SelectItem value="ASC">Oldest First</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Clear Filters Button */}
@@ -204,5 +185,5 @@ export function VoteFilters({
         </Button>
       </CollapsibleContent>
     </Collapsible>
-  );
+  )
 }

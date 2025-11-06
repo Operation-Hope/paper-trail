@@ -2,16 +2,16 @@
  * Donor search results component using React 19 Suspense
  * Fetches and displays donor search results with useSuspenseQuery
  */
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { queryKeys } from '../lib/query/keys';
-import { DonorCard } from './DonorCard';
-import { Card, CardContent } from './ui/card';
-import type { Donor } from '../types/api';
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { api } from '../services/api'
+import { queryKeys } from '../lib/query/keys'
+import { DonorCard } from './DonorCard'
+import { Card, CardContent } from './ui/card'
+import type { Donor } from '../types/api'
 
 interface DonorSearchResultsProps {
-  searchQuery: string;
-  onSelectDonor: (donor: Donor) => void;
+  searchQuery: string
+  onSelectDonor: (donor: Donor) => void
 }
 
 export function DonorSearchResults({
@@ -23,7 +23,7 @@ export function DonorSearchResults({
     queryKey: queryKeys.donors.search(searchQuery),
     queryFn: () => api.searchDonors(searchQuery),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   if (donors.length === 0) {
     return (
@@ -34,7 +34,7 @@ export function DonorSearchResults({
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -52,5 +52,5 @@ export function DonorSearchResults({
         ))}
       </div>
     </div>
-  );
+  )
 }

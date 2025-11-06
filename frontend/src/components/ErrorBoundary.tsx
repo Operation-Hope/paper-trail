@@ -2,50 +2,53 @@
  * Error boundary component for graceful error handling
  * Catches React errors and displays user-friendly fallback UI with retry functionality
  */
-import { Component, ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { Component, ReactNode } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Button } from './ui/button'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
+import { AlertCircle, RefreshCw } from 'lucide-react'
 
 interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallbackTitle?: string;
-  onReset?: () => void;
+  children: ReactNode
+  fallbackTitle?: string
+  onReset?: () => void
 }
 
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
-    super(props);
+    super(props)
     this.state = {
       hasError: false,
       error: null,
-    };
+    }
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return {
       hasError: true,
       error,
-    };
+    }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('Error caught by boundary:', error, errorInfo)
   }
 
   handleReset = () => {
     this.setState({
       hasError: false,
       error: null,
-    });
-    this.props.onReset?.();
-  };
+    })
+    this.props.onReset?.()
+  }
 
   render() {
     if (this.state.hasError) {
@@ -69,15 +72,19 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
               </Button>
-              <Button onClick={() => window.location.reload()} variant="ghost" size="sm">
+              <Button
+                onClick={() => window.location.reload()}
+                variant="ghost"
+                size="sm"
+              >
                 Reload Page
               </Button>
             </div>
           </CardContent>
         </Card>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

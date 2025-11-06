@@ -2,20 +2,20 @@
  * Politician search results component using React 19 Suspense
  * Fetches and displays politician search results with useSuspenseQuery
  */
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { queryKeys } from '../lib/query/keys';
-import { PoliticianCard } from './PoliticianCard';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import type { Politician } from '../types/api';
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { api } from '../services/api'
+import { queryKeys } from '../lib/query/keys'
+import { PoliticianCard } from './PoliticianCard'
+import { Card, CardContent } from './ui/card'
+import { Button } from './ui/button'
+import type { Politician } from '../types/api'
 
 interface PoliticianSearchResultsProps {
-  searchQuery: string;
-  comparisonPoliticians: Politician[];
-  onSelectPolitician: (politician: Politician) => void;
-  onToggleComparison: (politician: Politician) => void;
-  onClearComparison: () => void;
+  searchQuery: string
+  comparisonPoliticians: Politician[]
+  onSelectPolitician: (politician: Politician) => void
+  onToggleComparison: (politician: Politician) => void
+  onClearComparison: () => void
 }
 
 export function PoliticianSearchResults({
@@ -30,7 +30,7 @@ export function PoliticianSearchResults({
     queryKey: queryKeys.politicians.search(searchQuery),
     queryFn: () => api.searchPoliticians(searchQuery),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   if (politicians.length === 0) {
     return (
@@ -41,24 +41,27 @@ export function PoliticianSearchResults({
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">
-          Found {politicians.length} politician{politicians.length !== 1 ? 's' : ''}
+          Found {politicians.length} politician
+          {politicians.length !== 1 ? 's' : ''}
         </h2>
         <Button
           variant="outline"
           onClick={() => {
             if (comparisonPoliticians.length > 0) {
-              onClearComparison();
+              onClearComparison()
             }
           }}
         >
-          {comparisonPoliticians.length > 0 ? `Compare (${comparisonPoliticians.length})` : 'Compare Mode'}
+          {comparisonPoliticians.length > 0
+            ? `Compare (${comparisonPoliticians.length})`
+            : 'Compare Mode'}
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -76,5 +79,5 @@ export function PoliticianSearchResults({
         ))}
       </div>
     </div>
-  );
+  )
 }

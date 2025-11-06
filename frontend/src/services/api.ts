@@ -3,22 +3,22 @@
  * Provides typed functions for all Flask backend endpoints
  */
 
-import { API_BASE_URL } from '../config/env';
+import { API_BASE_URL } from '../config/env'
 import type {
   Politician,
   Donor,
   Donation,
   DonationSummary,
   VoteResponse,
-  VoteParams
-} from '../types/api';
+  VoteParams,
+} from '../types/api'
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${url}`, options);
+  const response = await fetch(`${API_BASE_URL}${url}`, options)
   if (!response.ok) {
-    throw new Error(`API error: ${response.status} ${response.statusText}`);
+    throw new Error(`API error: ${response.status} ${response.statusText}`)
   }
-  return response.json();
+  return response.json()
 }
 
 export const api = {
@@ -28,7 +28,9 @@ export const api = {
    * @returns Array of matching politicians
    */
   searchPoliticians: async (query: string): Promise<Politician[]> => {
-    return fetchJSON<Politician[]>(`/api/politicians/search?name=${encodeURIComponent(query)}`);
+    return fetchJSON<Politician[]>(
+      `/api/politicians/search?name=${encodeURIComponent(query)}`
+    )
   },
 
   /**
@@ -37,7 +39,7 @@ export const api = {
    * @returns Politician data
    */
   getPolitician: async (politicianId: number): Promise<Politician> => {
-    return fetchJSON<Politician>(`/api/politician/${politicianId}`);
+    return fetchJSON<Politician>(`/api/politician/${politicianId}`)
   },
 
   /**
@@ -46,7 +48,9 @@ export const api = {
    * @returns Array of matching donors
    */
   searchDonors: async (query: string): Promise<Donor[]> => {
-    return fetchJSON<Donor[]>(`/api/donors/search?name=${encodeURIComponent(query)}`);
+    return fetchJSON<Donor[]>(
+      `/api/donors/search?name=${encodeURIComponent(query)}`
+    )
   },
 
   /**
@@ -55,7 +59,7 @@ export const api = {
    * @returns Donor data
    */
   getDonor: async (donorId: number): Promise<Donor> => {
-    return fetchJSON<Donor>(`/api/donor/${donorId}`);
+    return fetchJSON<Donor>(`/api/donor/${donorId}`)
   },
 
   /**
@@ -64,8 +68,11 @@ export const api = {
    * @param options - Optional fetch options including signal for cancellation
    * @returns Array of donations with recipient politician information
    */
-  getDonorDonations: async (donorId: number, options?: RequestInit): Promise<Donation[]> => {
-    return fetchJSON<Donation[]>(`/api/donor/${donorId}/donations`, options);
+  getDonorDonations: async (
+    donorId: number,
+    options?: RequestInit
+  ): Promise<Donation[]> => {
+    return fetchJSON<Donation[]>(`/api/donor/${donorId}/donations`, options)
   },
 
   /**
@@ -78,23 +85,25 @@ export const api = {
     politicianId: number,
     params: VoteParams = {}
   ): Promise<VoteResponse> => {
-    const searchParams = new URLSearchParams();
-    if (params.page) searchParams.set('page', params.page.toString());
-    if (params.sort) searchParams.set('sort', params.sort);
+    const searchParams = new URLSearchParams()
+    if (params.page) searchParams.set('page', params.page.toString())
+    if (params.sort) searchParams.set('sort', params.sort)
 
     // Handle array parameters for type and subject filters
     if (params.type) {
-      const types = Array.isArray(params.type) ? params.type : [params.type];
-      types.forEach(t => searchParams.append('type', t));
+      const types = Array.isArray(params.type) ? params.type : [params.type]
+      types.forEach((t) => searchParams.append('type', t))
     }
     if (params.subject) {
-      const subjects = Array.isArray(params.subject) ? params.subject : [params.subject];
-      subjects.forEach(s => searchParams.append('subject', s));
+      const subjects = Array.isArray(params.subject)
+        ? params.subject
+        : [params.subject]
+      subjects.forEach((s) => searchParams.append('subject', s))
     }
 
-    const queryString = searchParams.toString();
-    const url = `/api/politician/${politicianId}/votes${queryString ? `?${queryString}` : ''}`;
-    return fetchJSON<VoteResponse>(url);
+    const queryString = searchParams.toString()
+    const url = `/api/politician/${politicianId}/votes${queryString ? `?${queryString}` : ''}`
+    return fetchJSON<VoteResponse>(url)
   },
 
   /**
@@ -102,8 +111,12 @@ export const api = {
    * @param politicianId - The politician's ID
    * @returns Array of industry donation summaries sorted by total amount
    */
-  getDonationSummary: async (politicianId: number): Promise<DonationSummary[]> => {
-    return fetchJSON<DonationSummary[]>(`/api/politician/${politicianId}/donations/summary`);
+  getDonationSummary: async (
+    politicianId: number
+  ): Promise<DonationSummary[]> => {
+    return fetchJSON<DonationSummary[]>(
+      `/api/politician/${politicianId}/donations/summary`
+    )
   },
 
   /**
@@ -118,7 +131,7 @@ export const api = {
   ): Promise<DonationSummary[]> => {
     return fetchJSON<DonationSummary[]>(
       `/api/politician/${politicianId}/donations/summary/filtered?topic=${encodeURIComponent(topic)}`
-    );
+    )
   },
 
   /**
@@ -126,6 +139,6 @@ export const api = {
    * @returns Array of bill subject strings sorted alphabetically
    */
   getBillSubjects: async (): Promise<string[]> => {
-    return fetchJSON<string[]>('/api/bills/subjects');
+    return fetchJSON<string[]>('/api/bills/subjects')
   },
-};
+}

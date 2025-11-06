@@ -3,9 +3,9 @@
  * Triggered by Cmd+K (Mac) or Ctrl+K (Windows/Linux)
  * Searches politicians and donors, with navigation actions
  */
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Users, DollarSign, Moon, Sun, Home } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Users, DollarSign, Moon, Sun, Home } from 'lucide-react'
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,93 +14,101 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from './ui/command';
-import { api } from '../services/api';
-import type { Politician, Donor } from '../types/api';
-import { useTheme } from './providers/theme-provider';
-import { buildPoliticianUrl, buildDonorUrl } from '../utils/routing';
+} from './ui/command'
+import { api } from '../services/api'
+import type { Politician, Donor } from '../types/api'
+import { useTheme } from './providers/theme-provider'
+import { buildPoliticianUrl, buildDonorUrl } from '../utils/routing'
 
 export function CommandPalette() {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [politicians, setPoliticians] = useState<Politician[]>([]);
-  const [donors, setDonors] = useState<Donor[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { setTheme, theme } = useTheme();
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const [politicians, setPoliticians] = useState<Politician[]>([])
+  const [donors, setDonors] = useState<Donor[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { setTheme, theme } = useTheme()
 
   // Toggle command palette with Cmd+K or Ctrl+K
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
+        e.preventDefault()
+        setOpen((open) => !open)
       }
-    };
+    }
 
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   // Search politicians and donors when search term changes
   useEffect(() => {
     const searchData = async () => {
       if (search.length < 2) {
-        setPoliticians([]);
-        setDonors([]);
-        return;
+        setPoliticians([])
+        setDonors([])
+        return
       }
 
-      setIsLoading(true);
+      setIsLoading(true)
       try {
         const [politicianResults, donorResults] = await Promise.all([
           api.searchPoliticians(search).catch(() => []),
-          search.length >= 3 ? api.searchDonors(search).catch(() => []) : Promise.resolve([]),
-        ]);
+          search.length >= 3
+            ? api.searchDonors(search).catch(() => [])
+            : Promise.resolve([]),
+        ])
 
-        setPoliticians(politicianResults.slice(0, 5));
-        setDonors(donorResults.slice(0, 5));
+        setPoliticians(politicianResults.slice(0, 5))
+        setDonors(donorResults.slice(0, 5))
       } catch (error) {
-        console.error('Command palette search error:', error);
+        console.error('Command palette search error:', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    const debounce = setTimeout(searchData, 200);
-    return () => clearTimeout(debounce);
-  }, [search]);
+    const debounce = setTimeout(searchData, 200)
+    return () => clearTimeout(debounce)
+  }, [search])
 
-  const handleSelectPolitician = useCallback((politician: Politician) => {
-    setOpen(false);
-    setSearch('');
+  const handleSelectPolitician = useCallback(
+    (politician: Politician) => {
+      setOpen(false)
+      setSearch('')
 
-    // Navigate to politician detail URL with minimal history
-    navigate(buildPoliticianUrl(politician.politicianid), { replace: true });
-  }, [navigate]);
+      // Navigate to politician detail URL with minimal history
+      navigate(buildPoliticianUrl(politician.politicianid), { replace: true })
+    },
+    [navigate]
+  )
 
-  const handleSelectDonor = useCallback((donor: Donor) => {
-    setOpen(false);
-    setSearch('');
+  const handleSelectDonor = useCallback(
+    (donor: Donor) => {
+      setOpen(false)
+      setSearch('')
 
-    // Navigate to donor detail URL with minimal history
-    navigate(buildDonorUrl(donor.donorid), { replace: true });
-  }, [navigate]);
+      // Navigate to donor detail URL with minimal history
+      navigate(buildDonorUrl(donor.donorid), { replace: true })
+    },
+    [navigate]
+  )
 
   const handleToggleTheme = useCallback(() => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-    setOpen(false);
-  }, [theme, setTheme]);
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+    setOpen(false)
+  }, [theme, setTheme])
 
   const handleNavigateHome = useCallback(() => {
-    setOpen(false);
-    navigate('/politician');
-  }, [navigate]);
+    setOpen(false)
+    navigate('/politician')
+  }, [navigate])
 
   const handleNavigateDonorSearch = useCallback(() => {
-    setOpen(false);
-    navigate('/donor');
-  }, [navigate]);
+    setOpen(false)
+    navigate('/donor')
+  }, [navigate])
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -192,5 +200,5 @@ export function CommandPalette() {
         )}
       </CommandList>
     </CommandDialog>
-  );
+  )
 }

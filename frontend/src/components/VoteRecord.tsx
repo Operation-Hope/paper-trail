@@ -2,33 +2,53 @@
  * Vote record component displaying paginated voting history with filtering
  * Shows votes in a table with pagination controls and subject filtering
  */
-import { Suspense } from 'react';
-import { useVotes, useBillSubjects } from '../hooks/useVotes';
-import { VoteFilters } from './VoteFilters';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Skeleton } from './ui/skeleton';
-import { X, Info, FileSearch } from 'lucide-react';
-import { formatDate } from '../utils/formatters';
-import { ErrorBoundary } from './ErrorBoundary';
-import type { Vote } from '../types/api';
+import { Suspense } from 'react'
+import { useVotes, useBillSubjects } from '../hooks/useVotes'
+import { VoteFilters } from './VoteFilters'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './ui/table'
+import { Button } from './ui/button'
+import { Badge } from './ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
+import { Skeleton } from './ui/skeleton'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from './ui/pagination'
+import { X, Info, FileSearch } from 'lucide-react'
+import { formatDate } from '../utils/formatters'
+import { ErrorBoundary } from './ErrorBoundary'
+import type { Vote } from '../types/api'
 
 interface VoteRecordProps {
-  politicianId: string;
-  selectedSubjectForDonations?: string | null;
-  onSubjectClick?: (subject: string | null) => void;
+  politicianId: string
+  selectedSubjectForDonations?: string | null
+  onSubjectClick?: (subject: string | null) => void
 }
 
-const MAX_VISIBLE_PAGES = 5;
-const EDGE_PAGES_THRESHOLD = 3;
-const EDGE_DISTANCE = 2;
-const WINDOW_OFFSET = 2;
-
-function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjectClick }: VoteRecordProps) {
+function VoteRecordContent({
+  politicianId,
+  selectedSubjectForDonations,
+  onSubjectClick,
+}: VoteRecordProps) {
   const {
     voteData,
     currentPage,
@@ -39,39 +59,39 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
     setSortOrder,
     setBillType,
     setSubject,
-  } = useVotes({ politicianId });
+  } = useVotes({ politicianId })
 
-  const { data: availableSubjects } = useBillSubjects();
+  const { data: availableSubjects } = useBillSubjects()
 
   const getVoteColor = (vote: Vote['Vote']): string => {
     switch (vote) {
       case 'Yea':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-green-100 text-green-800 border-green-300'
       case 'Nay':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-100 text-red-800 border-red-300'
       case 'Present':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300'
       case 'Not Voting':
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-100 text-gray-800 border-gray-300'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-100 text-gray-800 border-gray-300'
     }
-  };
+  }
 
   const handleSubjectClick = (clickedSubject: string) => {
     // If clicking the same subject that's already selected for donations, deselect it
     if (selectedSubjectForDonations === clickedSubject && onSubjectClick) {
-      onSubjectClick(null);
+      onSubjectClick(null)
     } else {
       // Filter votes by this subject
-      setSubject(clickedSubject);
-      setCurrentPage(1);
+      setSubject(clickedSubject)
+      setCurrentPage(1)
       // Also filter donations by this subject
       if (onSubjectClick) {
-        onSubjectClick(clickedSubject);
+        onSubjectClick(clickedSubject)
       }
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -84,7 +104,8 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
           </AlertTitle>
           <AlertDescription className="text-blue-700 flex items-center justify-between">
             <span>
-              Click on subject tags below to explore different topics, or clear the filter to see all donations.
+              Click on subject tags below to explore different topics, or clear
+              the filter to see all donations.
             </span>
             <Button
               variant="ghost"
@@ -124,17 +145,18 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
               <div>
                 <h3 className="font-semibold text-lg mb-2">No Votes Found</h3>
                 <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                  No voting records match your current filters. Try adjusting the bill type, subject, or sort order to see more results.
+                  No voting records match your current filters. Try adjusting
+                  the bill type, subject, or sort order to see more results.
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setBillType('');
-                  setSubject('');
-                  setSortOrder('DESC');
-                  setCurrentPage(1);
+                  setBillType('')
+                  setSubject('')
+                  setSortOrder('DESC')
+                  setCurrentPage(1)
                 }}
               >
                 Clear All Filters
@@ -188,8 +210,8 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
                                           : 'hover:bg-blue-50 hover:border-blue-400 hover:scale-105 hover:shadow-sm'
                                       }`}
                                       onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleSubjectClick(subj);
+                                        e.stopPropagation()
+                                        handleSubjectClick(subj)
                                       }}
                                     >
                                       {subj}
@@ -227,56 +249,99 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
                     Page {voteData.pagination.currentPage} of{' '}
-                    {voteData.pagination.totalPages} ({voteData.pagination.totalVotes}{' '}
-                    votes)
+                    {voteData.pagination.totalPages} (
+                    {voteData.pagination.totalVotes} votes)
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      Previous
-                    </Button>
-                    {Array.from(
-                      { length: Math.min(MAX_VISIBLE_PAGES, voteData.pagination.totalPages) },
-                      (_, i) => {
-                        let pageNum: number;
-                        if (voteData.pagination.totalPages <= MAX_VISIBLE_PAGES) {
-                          pageNum = i + 1;
-                        } else if (currentPage <= EDGE_PAGES_THRESHOLD) {
-                          pageNum = i + 1;
-                        } else if (
-                          currentPage >=
-                          voteData.pagination.totalPages - EDGE_DISTANCE
-                        ) {
-                          pageNum =
-                            voteData.pagination.totalPages - (MAX_VISIBLE_PAGES - 1) + i;
-                        } else {
-                          pageNum = currentPage - WINDOW_OFFSET + i;
-                        }
-                        return pageNum;
-                      }
-                    ).map((pageNum) => (
-                      <Button
-                        key={pageNum}
-                        variant={pageNum === currentPage ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setCurrentPage(pageNum)}
-                      >
-                        {pageNum}
-                      </Button>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={currentPage === voteData.pagination.totalPages}
-                    >
-                      Next
-                    </Button>
-                  </div>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          className={
+                            currentPage === 1
+                              ? 'pointer-events-none opacity-50'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
+
+                      {/* First page */}
+                      {currentPage > 3 && (
+                        <>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(1)}
+                              isActive={currentPage === 1}
+                              className="cursor-pointer"
+                            >
+                              1
+                            </PaginationLink>
+                          </PaginationItem>
+                          {currentPage > 4 && (
+                            <PaginationItem>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          )}
+                        </>
+                      )}
+
+                      {/* Page numbers around current page */}
+                      {Array.from(
+                        { length: voteData.pagination.totalPages },
+                        (_, i) => i + 1
+                      )
+                        .filter((pageNum) => {
+                          // Show pages within 2 of current page
+                          return Math.abs(pageNum - currentPage) <= 2
+                        })
+                        .map((pageNum) => (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(pageNum)}
+                              isActive={pageNum === currentPage}
+                              className="cursor-pointer"
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                      {/* Last page */}
+                      {currentPage < voteData.pagination.totalPages - 2 && (
+                        <>
+                          {currentPage < voteData.pagination.totalPages - 3 && (
+                            <PaginationItem>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          )}
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() =>
+                                setCurrentPage(voteData.pagination.totalPages)
+                              }
+                              isActive={
+                                currentPage === voteData.pagination.totalPages
+                              }
+                              className="cursor-pointer"
+                            >
+                              {voteData.pagination.totalPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      )}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          className={
+                            currentPage === voteData.pagination.totalPages
+                              ? 'pointer-events-none opacity-50'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               </CardContent>
             </Card>
@@ -284,7 +349,7 @@ function VoteRecordContent({ politicianId, selectedSubjectForDonations, onSubjec
         </>
       )}
     </div>
-  );
+  )
 }
 
 // Loading fallback component
@@ -350,7 +415,7 @@ function VoteRecordSkeleton() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Wrapper component with Suspense boundary
@@ -361,5 +426,5 @@ export function VoteRecord(props: VoteRecordProps) {
         <VoteRecordContent {...props} />
       </Suspense>
     </ErrorBoundary>
-  );
+  )
 }

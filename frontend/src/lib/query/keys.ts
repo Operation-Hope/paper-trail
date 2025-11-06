@@ -9,9 +9,14 @@ export const queryKeys = {
     all: ['politicians'] as const,
     search: (query: string) => ['politicians', 'search', query] as const,
     detail: (id: number | string) => ['politicians', 'detail', id] as const,
-    votes: (id: number | string, page: number, sort: 'ASC' | 'DESC', filters?: { types?: string[]; subjects?: string[] }) =>
-      ['politicians', 'votes', id, page, sort, filters] as const,
-    donations: (id: number | string) => ['politicians', 'donations', id] as const,
+    votes: (
+      id: number | string,
+      page: number,
+      sort: 'ASC' | 'DESC',
+      filters?: { types?: string[]; subjects?: string[] }
+    ) => ['politicians', 'votes', id, page, sort, filters] as const,
+    donations: (id: number | string) =>
+      ['politicians', 'donations', id] as const,
     donationsFiltered: (id: number | string, topic: string) =>
       ['politicians', 'donations', id, 'filtered', topic] as const,
   },
@@ -29,4 +34,4 @@ export const queryKeys = {
     all: ['bills'] as const,
     subjects: () => ['bills', 'subjects'] as const,
   },
-} as const;
+} as const
