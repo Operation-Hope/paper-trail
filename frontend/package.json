@@ -14,7 +14,8 @@
     "knip": "knip",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "fix:tailwind-data-attr": "node scripts/fix-tailwind-data-attr.js"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

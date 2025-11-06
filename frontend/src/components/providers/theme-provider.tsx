@@ -1,8 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { ThemeCtx } from './theme-context';
 
 type Theme = 'light' | 'dark';
-type Ctx = { theme: Theme; setTheme: (t: Theme) => void };
-const ThemeCtx = createContext<Ctx | null>(null);
 
 export function ThemeProvider({
   defaultTheme = 'dark',
@@ -30,8 +29,3 @@ export function ThemeProvider({
   );
 }
 
-export function useTheme() {
-  const ctx = useContext(ThemeCtx);
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
-  return ctx;
-}

@@ -17,7 +17,7 @@ import {
 } from './ui/command';
 import { api } from '../services/api';
 import type { Politician, Donor } from '../types/api';
-import { useTheme } from './providers/theme-provider';
+import { useTheme } from './providers/use-theme';
 import { buildPoliticianUrl, buildDonorUrl } from '../utils/routing';
 
 export function CommandPalette() {

@@ -2,12 +2,13 @@ import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
-import { ThemeProvider, useTheme } from './components/providers/theme-provider';
+import { ThemeProvider } from './components/providers/theme-provider';
+import { useTheme } from './components/providers/use-theme';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/query/queryClient';
 import { applyChartJSTheme } from './lib/charting/chartjs-theme';
 
-function ChartThemeSync() {
+export function ChartThemeSync() {
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ function ChartThemeSync() {
   return null;
 }
 
-function Root() {
+export function Root() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light">

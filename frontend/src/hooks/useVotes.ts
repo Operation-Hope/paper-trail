@@ -2,7 +2,7 @@
  * Custom hook for managing politician vote data with pagination and filtering
  * Uses TanStack Query for caching and automatic refetching
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
 import { queryKeys } from '../lib/query/keys';
@@ -29,15 +29,21 @@ export function useVotes({ politicianId }: UseVotesParams): UseVotesResult {
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
   const [billType, setBillType] = useState('');
   const [subject, setSubject] = useState('');
+  const prevPoliticianIdRef = useRef<string>(politicianId);
 
   // Reset filters when politician changes
   // This is intentional: we want to reset all filter state when viewing a different politician
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Using startTransition to avoid synchronous setState in effect
   useEffect(() => {
-    setCurrentPage(1);
-    setSortOrder('DESC');
-    setBillType('');
-    setSubject('');
+    if (prevPoliticianIdRef.current !== politicianId) {
+      prevPoliticianIdRef.current = politicianId;
+      startTransition(() => {
+        setCurrentPage(1);
+        setSortOrder('DESC');
+        setBillType('');
+        setSubject('');
+      });
+    }
   }, [politicianId]);
 
   // Build filters object for query key

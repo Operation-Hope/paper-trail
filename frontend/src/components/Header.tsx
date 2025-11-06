@@ -7,11 +7,11 @@ import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   return (
-    <header className="bg-gradient-to-r from-blue-900 to-blue-950 text-white shadow-lg transition-colors dark:from-gray-900 dark:to-gray-800">
+    <header className="bg-linear-to-r from-blue-900 to-blue-950 text-white shadow-lg transition-colors dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 flex-shrink-0">
+            <div className="h-10 w-10 shrink-0">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/The_Young_Turks_logo.svg/200px-The_Young_Turks_logo.svg.png"
                 alt="TYT Logo"
