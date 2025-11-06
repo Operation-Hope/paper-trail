@@ -70,8 +70,11 @@ export function PoliticianCard({
     >
       <CardContent className="pt-6">
         <div className="flex gap-3">
-          {comparisonMode && onToggleComparison && (
-            <div className="flex items-start pt-1" onClick={handleCheckboxClick}>
+          {onToggleComparison && (
+            <div
+              className={`flex items-start pt-1 ${comparisonMode ? 'visible' : 'invisible'}`}
+              onClick={handleCheckboxClick}
+            >
               <Checkbox
                 checked={isSelectedForComparison}
                 onCheckedChange={() => onToggleComparison(politician)}
