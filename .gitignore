@@ -428,6 +428,7 @@ tmp/
 *.tmp
 *.bak
 *.temp
+paper-trail-dump
 
 # local development
 local/*
