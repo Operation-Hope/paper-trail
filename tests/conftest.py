@@ -41,6 +41,67 @@ def verify_test_database():
         )
 
 
+def ensure_test_database_exists():
+    """Create the test database if it doesn't exist."""
+    # Try to connect to the test database first
+    try:
+        test_conn = psycopg2.connect(**config.conn_params)
+        test_conn.close()
+        return  # Database already exists
+    except psycopg2.OperationalError as e:
+        # Database doesn't exist or connection failed
+        error_str = str(e).lower()
+        if "database" in error_str and "does not exist" in error_str:
+            # Database doesn't exist, create it
+            pass
+        else:
+            # Some other connection error, re-raise it
+            raise
+    
+    # Connect to default PostgreSQL database to create the test database
+    # Try common default database names
+    default_db_names = ["postgres", "template1"]
+    default_conn_params = config.conn_params.copy()
+    
+    conn = None
+    for db_name in default_db_names:
+        try:
+            default_conn_params["dbname"] = db_name
+            conn = psycopg2.connect(**default_conn_params)
+            break
+        except psycopg2.OperationalError:
+            continue
+    
+    if conn is None:
+        raise RuntimeError(
+            f"Could not connect to PostgreSQL to create test database. "
+            f"Tried: {', '.join(default_db_names)}"
+        )
+    
+    conn.autocommit = True
+    cursor = conn.cursor()
+    
+    try:
+        # Check if database exists
+        cursor.execute(
+            "SELECT 1 FROM pg_database WHERE datname = %s",
+            (config.conn_params["dbname"],)
+        )
+        exists = cursor.fetchone()
+        
+        if not exists:
+            # Create the test database
+            cursor.execute(
+                f'CREATE DATABASE {config.conn_params["dbname"]}'
+            )
+            print(f"Created test database: {config.conn_params['dbname']}")
+        else:
+            print(f"Test database already exists: {config.conn_params['dbname']}")
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def restore_schema_from_dump(cursor):
     """Extract and restore database schema from pg_dump archive."""
     import tempfile
@@ -128,8 +189,9 @@ def restore_schema_from_dump(cursor):
 
 @pytest.fixture(scope="session")
 def setup_test_db():
-    """Create test database schema once per test session."""
+    """Create test database and schema once per test session."""
     verify_test_database()
+    ensure_test_database_exists()
 
     conn = psycopg2.connect(**config.conn_params)
     conn.autocommit = True

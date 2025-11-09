@@ -1,24 +1,52 @@
 ## Local dev set up instructions
 
-**todo** add postgres install or container install instructions and .env
+### Prerequisites
 
-Create and activate virtual environment
+- Python 3.13 or higher
+- PostgreSQL database server (install via [PostgreSQL downloads](https://www.postgresql.org/download/) or use Docker)
 
-`python -m venv env`
+### Setup Steps
 
-linux/mac   
-`source env/bin/activate`  
+1. **Create and activate virtual environment**
 
-windows  
-`source env/Scripts/activate`
+   ```bash
+   python -m venv env
+   ```
 
-install requirements  
-`pip install -r requirements.txt`  
+   **Linux/mac:**
+   ```bash
+   source env/bin/activate
+   ```
 
-rename `.dev.env` > `.env` and update with your local values.
+   **Windows:**
+   ```bash
+   source env/Scripts/activate
+   ```
 
-launch application
-`python -m app.main`
+2. **Install requirements**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment variables**
+   
+   Copy `.dev.env` to `.env` and update with your local database credentials:
+   ```bash
+   cp .dev.env .env
+   ```
+   
+   Edit `.env` and update these values:
+   - `DB_HOST`: Your PostgreSQL host (use `localhost` for local development)
+   - `DB_PORT`: PostgreSQL port (default: `5432`)
+   - `DB_NAME`: Your development database name (e.g., `paper_trail_dev`)
+   - `DB_USER`: Your PostgreSQL username (often your system username for local PostgreSQL)
+   - `DB_PASSWORD`: Your PostgreSQL password (can be empty for local PostgreSQL with peer authentication)
+   - `CONGRESS_GOV_API_KEY`: Your Congress.gov API key (optional for basic functionality)
+
+4. **Launch application**
+   ```bash
+   python -m app.main
+   ```
 
 ## Running Tests
 
@@ -29,11 +57,11 @@ The project uses [pytest](https://docs.pytest.org/) for testing. The test suite 
 Before running tests, you need:
 
 1. A PostgreSQL database server running (same as for development)
-2. A separate test database that will be automatically created
-3. Your `.env` file configured with database credentials
+2. Your `.env` file configured with database credentials (the test database will be created automatically)
+3. Your database user must have permissions to create databases (required for automatic test database creation)
 
 The test suite will automatically:
-- Create a test database named `paper_trail_test`
+- Create a test database named `paper_trail_test` if it doesn't exist
 - Restore the database schema from `bin/pg-dump.tar.bz2` (schema only, no data)
 - Seed test data before each test
 - Clean up data between tests to ensure isolation
@@ -102,8 +130,8 @@ If tests fail to run:
 
 1. Ensure PostgreSQL is running and accessible
 2. Verify your `.env` file has correct database credentials
-3. Make sure your database user has permissions to create databases
-4. Check that the `bin/bootstrap.sql` file exists and is valid
+3. Make sure your database user has permissions to create databases (required for automatic test database creation)
+4. Check that the `bin/pg-dump.tar.bz2` file exists and is valid
 5. Try running tests with `-v` flag for more detailed output
 
 ### Pod Containers for deployment
