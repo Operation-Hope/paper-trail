@@ -193,18 +193,18 @@ paper-trail/
 
 ### 🧪 Running Tests
 
-The project uses [pytest](https://docs.pytest.org/) with comprehensive unit tests for all API endpoints.
+The project uses [pytest](https://docs.pytest.org/) for testing. The test suite includes comprehensive unit tests for all API endpoints, with fixtures for database setup and test data seeding.
 
-**Prerequisites:**
+### Prerequisites for Testing
 
 Before running tests, you need:
 
 1. A PostgreSQL database server running (same as for development)
-2. A separate test database that will be automatically created
-3. Your `.env` file configured with database credentials
+2. Your `.env` file configured with database credentials (the test database will be created automatically)
+3. Your database user must have permissions to create databases (required for automatic test database creation)
 
 The test suite will automatically:
-- Create a test database named `paper_trail_test`
+- Create a test database named `paper_trail_test` if it doesn't exist
 - Restore the database schema from `bin/pg-dump.tar.bz2` (schema only, no data)
 - Seed test data before each test
 - Clean up data between tests to ensure isolation
