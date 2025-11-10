@@ -71,6 +71,8 @@ The easiest way to get started is using Docker Compose, which handles all depend
 - Docker and Docker Compose installed
 - (Optional) Congress.gov API key
 
+**Note:** Docker Compose handles all dependencies automatically. You don't need Node.js, npm, pnpm, Python, or PostgreSQL installed on your machine - everything runs in containers.
+
 **Setup:**
 ```bash
 # Clone the repository
@@ -171,6 +173,20 @@ python bin/populate_industries.py
 5. `populate_industries.py` (requires donors and donations)
 
 **Note:** Some populate scripts require external data files or API keys. Check each script's requirements before running.
+
+**⚠️ External Data Requirements:**
+
+The following populate scripts require external data files that are not included in the repository (they're in `.gitignore` due to size):
+
+- **`populate_bills.py`** - Requires bill data files in `app/bills/` directory
+- **`populate_donors_and_donations.py`** - Requires FEC data files in `app/contributions/` directory  
+- **`populate_votes.py`** - Requires vote data files in `app/votes/` directory and `app/HSall_members.json`
+
+**TODO:** Update these populate scripts to:
+- Provide instructions on where to download the required data files
+- Add automatic data download functionality where possible
+- Include sample/minimal datasets for testing
+- Document the data file structure and format requirements
 
 **Accessing the Database:**
 
@@ -556,6 +572,17 @@ Found a bug or have a feature request? [Open an issue](https://github.com/Operat
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## TODO / Future Improvements
+
+- **Populate Scripts Enhancement:** Update populate scripts (`populate_bills.py`, `populate_donors_and_donations.py`, `populate_votes.py`) to:
+  - Provide clear instructions on where to download required external data files
+  - Add automatic data download functionality where possible (e.g., from public APIs or data sources)
+  - Include sample/minimal datasets for testing and development
+  - Document the data file structure and format requirements
+  - Add validation to check for required data files before attempting to populate
 
 ---
 
