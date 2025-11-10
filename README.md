@@ -99,31 +99,53 @@ Press `Ctrl+C` to stop all services.
 # Start in detached mode (background)
 docker compose up -d
 
-# View logs
-docker compose logs -f
+### Prerequisites
 
-# Stop services
-docker compose down
+- Python 3.13 or higher
+- PostgreSQL database server (install via [PostgreSQL downloads](https://www.postgresql.org/download/) or use Docker)
 
-# Rebuild after code changes
-docker compose up --build
+### Setup Steps
 
-# Stop and remove volumes (reset database)
-docker compose down -v
-```
+1. **Create and activate virtual environment**
 
-**Hot Reload:**
-Both backend and frontend support hot reload in Docker Compose:
-- ⚡ Backend: Flask auto-reloads on Python file changes
-- ⚡ Frontend: Vite auto-reloads on TypeScript/React file changes
+   ```bash
+   python -m venv env
+   ```
 
----
+   **Linux/mac:**
+   ```bash
+   source env/bin/activate
+   ```
 
-## Development
+   **Windows:**
+   ```bash
+   source env/Scripts/activate
+   ```
 
-### 💻 Local Development (Without Docker)
+2. **Install requirements**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-If you prefer to run services locally without Docker:
+3. **Configure environment variables**
+   
+   Copy `.dev.env` to `.env` and update with your local database credentials:
+   ```bash
+   cp .dev.env .env
+   ```
+   
+   Edit `.env` and update these values:
+   - `DB_HOST`: Your PostgreSQL host (use `localhost` for local development)
+   - `DB_PORT`: PostgreSQL port (default: `5432`)
+   - `DB_NAME`: Your development database name (e.g., `paper_trail_dev`)
+   - `DB_USER`: Your PostgreSQL username (often your system username for local PostgreSQL)
+   - `DB_PASSWORD`: Your PostgreSQL password (can be empty for local PostgreSQL with peer authentication)
+   - `CONGRESS_GOV_API_KEY`: Your Congress.gov API key (optional for basic functionality)
+
+4. **Launch application**
+   ```bash
+   python -m app.main
+   ```
 
 **Prerequisites:**
 - Python 3.13+
@@ -200,11 +222,11 @@ The project uses [pytest](https://docs.pytest.org/) with comprehensive unit test
 Before running tests, you need:
 
 1. A PostgreSQL database server running (same as for development)
-2. A separate test database that will be automatically created
-3. Your `.env` file configured with database credentials
+2. Your `.env` file configured with database credentials (the test database will be created automatically)
+3. Your database user must have permissions to create databases (required for automatic test database creation)
 
 The test suite will automatically:
-- Create a test database named `paper_trail_test`
+- Create a test database named `paper_trail_test` if it doesn't exist
 - Restore the database schema from `bin/pg-dump.tar.bz2` (schema only, no data)
 - Seed test data before each test
 - Clean up data between tests to ensure isolation
@@ -267,8 +289,8 @@ The test suite includes multiple safety checks to prevent accidentally running t
 If tests fail to run:
 1. Ensure PostgreSQL is running and accessible
 2. Verify your `.env` file has correct database credentials
-3. Make sure your database user has permissions to create databases
-4. Check that the `bin/bootstrap.sql` file exists and is valid
+3. Make sure your database user has permissions to create databases (required for automatic test database creation)
+4. Check that the `bin/pg-dump.tar.bz2` file exists and is valid
 5. Try running tests with `-v` flag for more detailed output
 
 ---
