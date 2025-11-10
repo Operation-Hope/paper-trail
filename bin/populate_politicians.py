@@ -5,6 +5,11 @@ from psycopg2.extras import execute_values
 import re 
 import sys
 import os
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
 import app.config as config  # Imports your new test.py file
 
 # --- CONFIGURATION ---

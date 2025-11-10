@@ -24,23 +24,25 @@ services:
     environment:
       FLASK_ENV: development
       FLASK_DEBUG: "True"
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: paper_trail_dev
-      DB_USER: paper_trail_user
-      DB_PASSWORD: dev_password_change_in_production
-      PORT: 5001
+      DOCKER_COMPOSE: "true"
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-paper_trail_dev}
+      DB_USER: ${DB_USER:-paper_trail_user}
+      DB_PASSWORD: ${DB_PASSWORD:-dev_password_change_in_production}
+      PORT: ${PORT:-5001}
       CONGRESS_GOV_API_KEY: ${CONGRESS_GOV_API_KEY:-}
-      VERSION: dev
+      VERSION: ${VERSION:-dev}
     ports:
       - "5001:5001"
     volumes:
       - ./app:/app/app:ro
       - ./tests:/app/tests:ro
+      - ./bin:/app/bin:ro
     depends_on:
       db:
         condition: service_healthy
-    command: flask run --host=0.0.0.0 --port=5001 --reload
+    command: bash bin/docker-entrypoint.sh
 
   frontend:
     build:

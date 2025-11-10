@@ -77,14 +77,146 @@ The easiest way to get started is using Docker Compose, which handles all depend
 git clone <repository-url>
 cd paper-trail
 
-# Copy environment template
-cp .env.docker .env
-
-# (Optional) Add your Congress.gov API key to .env
-# CONGRESS_GOV_API_KEY=your_key_here
-
 # Start all services (database, backend, frontend)
 docker compose up
+```
+
+That's it! The `.env` file is optional for Docker Compose since `docker-compose.yml` already sets all the required environment variables with defaults.
+
+**Optional: Create `.env` file to override defaults**
+
+If you want to override any values (e.g., add your Congress.gov API key for populating politician data), you can create a `.env` file:
+
+```bash
+# Create .env file (optional)
+echo "CONGRESS_GOV_API_KEY=your_key_here" > .env
+```
+
+**Note:** For Docker Compose, the `.env` file is optional. Docker Compose already sets all environment variables with defaults. The `.env` file is mainly useful for local development without Docker (see [Local Development](#-local-development-without-docker) section below).
+
+**Database Schema Initialization:**
+
+The database schema is automatically initialized on first startup. The backend will:
+- Check if the database schema exists
+- If not, automatically restore it from `bin/pg-dump.tar.bz2`
+- Skip initialization if the schema already exists
+
+**Note:** If you reset the database with `docker compose down -v`, the schema will be automatically restored on the next startup.
+
+**Populating Database with Data:**
+
+The database starts with schema only (empty tables). To populate it with data, use the populate scripts in the `bin/` directory. These scripts can be run inside the Docker container or locally.
+
+**Running Populate Scripts in Docker:**
+
+```bash
+# Run a populate script inside the backend container
+docker exec -it paper-trail-backend python bin/populate_politicians.py
+docker exec -it paper-trail-backend python bin/populate_bills.py
+docker exec -it paper-trail-backend python bin/populate_donors_and_donations.py
+docker exec -it paper-trail-backend python bin/populate_votes.py
+docker exec -it paper-trail-backend python bin/populate_industries.py
+```
+
+**Running Populate Scripts Locally:**
+
+If running without Docker, ensure your `.env` file is configured and your virtual environment is activated:
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+
+# Run populate scripts
+python bin/populate_politicians.py
+python bin/populate_bills.py
+python bin/populate_donors_and_donations.py
+python bin/populate_votes.py
+python bin/populate_industries.py
+```
+
+**Populate Scripts Overview:**
+
+- **`populate_politicians.py`** - Fetches politician data from Congress.gov API
+  - Requires: `CONGRESS_GOV_API_KEY` in `.env`
+  - Populates: `Politicians` table
+  - Fetches data for Congresses 108-119
+
+- **`populate_bills.py`** - Imports bill data from local XML files
+  - Requires: Bill data files in `app/bills/` directory (see `BILL_DATA_PATH` in config)
+  - Populates: `Bills` table
+  - Processes bills from Congresses 108-119
+
+- **`populate_donors_and_donations.py`** - Imports FEC campaign contribution data
+  - Requires: FEC data files in `app/contributions/` directory (see `FEC_DATA_FOLDER_PATH` in config)
+  - Populates: `Donors` and `Donations` tables
+  - Processes CSV files from Federal Election Commission
+
+- **`populate_votes.py`** - Imports congressional voting records
+  - Requires: Vote data files in `app/votes/` directory and member data in `app/HSall_members.json`
+  - Populates: `Votes` table
+  - Links votes to politicians and bills
+
+- **`populate_industries.py`** - Categorizes donors by industry sector
+  - Requires: Donors and donations to be populated first
+  - Updates: `Donors` table with industry classifications
+  - Uses keyword matching to assign industries (Health, Finance, Technology, etc.)
+
+**Recommended Order:**
+
+1. `populate_politicians.py` (required for other scripts)
+2. `populate_bills.py` (required for votes)
+3. `populate_donors_and_donations.py` (required for industries)
+4. `populate_votes.py` (requires politicians and bills)
+5. `populate_industries.py` (requires donors and donations)
+
+**Note:** Some populate scripts require external data files or API keys. Check each script's requirements before running.
+
+**Accessing the Database:**
+
+To connect to the database directly for viewing or querying data:
+
+**Using psql (Command Line):**
+
+```bash
+# Connect from your host machine
+docker exec -it paper-trail-db psql -U paper_trail_user -d paper_trail_dev
+
+# Or if you have psql installed locally
+psql -h localhost -p 5432 -U paper_trail_user -d paper_trail_dev
+# Password: dev_password_change_in_production
+```
+
+**Using a Database GUI Client:**
+
+Connect using these credentials:
+- **Host:** `localhost`
+- **Port:** `5432`
+- **Database:** `paper_trail_dev`
+- **Username:** `paper_trail_user`
+- **Password:** `dev_password_change_in_production`
+
+Popular clients: pgAdmin, DBeaver, TablePlus, DataGrip, or any PostgreSQL-compatible client.
+
+**Useful SQL Queries:**
+
+```sql
+-- View all tables
+\dt
+
+-- Count records in each table
+SELECT 'Politicians' as table_name, COUNT(*) as count FROM Politicians
+UNION ALL
+SELECT 'Bills', COUNT(*) FROM Bills
+UNION ALL
+SELECT 'Donors', COUNT(*) FROM Donors
+UNION ALL
+SELECT 'Donations', COUNT(*) FROM Donations
+UNION ALL
+SELECT 'Votes', COUNT(*) FROM Votes;
+
+-- View sample politicians
+SELECT * FROM Politicians LIMIT 10;
 ```
 
 That's it! The application will be available at:
@@ -143,7 +275,8 @@ pip install -r requirements.txt
 
 # Copy environment template
 cp .dev.env .env
-# Update .env with your PostgreSQL credentials
+# The .dev.env file has defaults that match Docker Compose.
+# Update .env if your local PostgreSQL has different credentials.
 ```
 
 **Frontend Setup:**
@@ -153,6 +286,22 @@ pnpm install
 ```
 
 **Running Locally:**
+
+**Option 1: Using the startup script**
+
+```bash
+# Terminal 1: Start backend
+./bin/start_local.sh      # Linux/macOS
+# or
+bin\start_local.bat       # Windows
+
+# Terminal 2: Start frontend
+cd frontend
+pnpm run dev              # Runs on port 5173
+```
+
+**Option 2: Manual startup**
+
 ```bash
 # Terminal 1: Start backend
 python -m app.main  # Runs on port 5001
@@ -161,6 +310,17 @@ python -m app.main  # Runs on port 5001
 cd frontend
 pnpm run dev        # Runs on port 5173
 ```
+
+**Check Database Status (Optional):**
+
+Before starting the app, you can manually check if your database has data:
+
+```bash
+# Check if database has data
+python bin/check_and_seed.py
+```
+
+This will tell you if the database is empty and needs to be populated. If the database is empty, see the [Populating Database with Data](#populating-database-with-data) section below.
 
 Open http://localhost:5173 in your browser.
 

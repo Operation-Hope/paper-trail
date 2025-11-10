@@ -2,6 +2,11 @@ import os
 from dotenv import load_dotenv
 # from pathlib import Path
 
+# Check for Docker environment BEFORE loading .env file
+# This ensures Docker environment variables take precedence
+is_docker = os.getenv("DOCKER_COMPOSE", "").lower() == "true"
+
+# Load .env file (won't override existing environment variables)
 load_dotenv('.env')
 
 # --- Base Directory ---
@@ -9,12 +14,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- Load Database Credentials from .env ---
 # We use os.getenv() to read the variables.
-# The second argument (e.g., "localhost") is a default value if the variable isn't found.
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Smart defaults: detect if running in Docker (service name 'db') or locally ('localhost')
+# Docker Compose sets DOCKER_COMPOSE=true, but we can also detect by checking if 'db' hostname resolves
+# Note: In Docker, always use 'db' as host regardless of .env file
+if is_docker:
+    # Force 'db' host in Docker, ignore .env file value
+    DB_HOST = "db"
+else:
+    # Use .env file value or default to localhost
+    DB_HOST = os.getenv("DB_HOST") or "localhost"
+
+DB_PORT = os.getenv("DB_PORT") or "5432"
+DB_NAME = os.getenv("DB_NAME") or "paper_trail_dev"
+DB_USER = os.getenv("DB_USER") or "paper_trail_user"
+DB_PASSWORD = os.getenv("DB_PASSWORD") or "dev_password_change_in_production"
 
 # --- Test Mode Override ---
 # When running tests, force usage of test database to prevent production data corruption

@@ -25,11 +25,10 @@ fi
 
 # Check if .env file exists
 if [ ! -f .env ]; then
-    echo -e "${YELLOW}Warning: .env file not found${NC}"
-    echo "Creating .env from .env.docker template..."
-    cp .env.docker .env
-    echo -e "${GREEN}✓ Created .env file${NC}"
-    echo -e "${YELLOW}Note: Update .env with your Congress.gov API key if needed${NC}\n"
+    echo -e "${YELLOW}Note: .env file not found${NC}"
+    echo "The .env file is optional for Docker Compose."
+    echo "Docker Compose already sets all environment variables with defaults."
+    echo -e "${YELLOW}Create .env only if you need to override values (e.g., CONGRESS_GOV_API_KEY)${NC}\n"
 fi
 
 # Parse command line arguments
