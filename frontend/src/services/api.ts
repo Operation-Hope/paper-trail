@@ -3,7 +3,6 @@
  * Provides typed functions for all Flask backend endpoints
  */
 
-import { API_BASE_URL } from '../config/env';
 import type {
   Politician,
   Donor,
@@ -14,7 +13,7 @@ import type {
 } from '../types/api';
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${url}`, options);
+  const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
