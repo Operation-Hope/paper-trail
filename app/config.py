@@ -29,7 +29,7 @@ DB_NAME = os.getenv("DB_NAME", "paper_trail_dev")
 DB_USER = os.getenv("DB_USER", "paper_trail_user")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "dev_password_change_in_production")
 
-FLASK_DEBUG = os.getenv("FLASK_DEBUG", None)
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", "False").lower() == "true"
 # --- Test Mode Override ---
 # When running tests, force usage of test database to prevent production data corruption
 if os.getenv("TESTING") == "true":
