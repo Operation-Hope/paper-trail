@@ -22,7 +22,7 @@ if is_docker:
     DB_HOST = "db"
 else:
     # Use .env file value or default to localhost
-    DB_HOST = os.getenv("DB_HOST") or "localhost"
+    DB_HOST = os.getenv("DB_HOST", "localhost") 
 
 DB_PORT = os.getenv("DB_PORT") or "5432"
 DB_NAME = os.getenv("DB_NAME") or "paper_trail_dev"
