@@ -24,11 +24,12 @@ else:
     # Use .env file value or default to localhost
     DB_HOST = os.getenv("DB_HOST", "localhost") 
 
-DB_PORT = os.getenv("DB_PORT") or "5432"
-DB_NAME = os.getenv("DB_NAME") or "paper_trail_dev"
-DB_USER = os.getenv("DB_USER") or "paper_trail_user"
-DB_PASSWORD = os.getenv("DB_PASSWORD") or "dev_password_change_in_production"
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "paper_trail_dev")
+DB_USER = os.getenv("DB_USER",  "paper_trail_user")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "dev_password_change_in_production")
 
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", None)
 # --- Test Mode Override ---
 # When running tests, force usage of test database to prevent production data corruption
 if os.getenv("TESTING") == "true":
