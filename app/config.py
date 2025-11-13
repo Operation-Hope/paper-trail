@@ -26,7 +26,7 @@ else:
 
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "paper_trail_dev")
-DB_USER = os.getenv("DB_USER",  "paper_trail_user")
+DB_USER = os.getenv("DB_USER", "paper_trail_user")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "dev_password_change_in_production")
 
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", None)
@@ -55,10 +55,6 @@ VOTE_DATA_FOLDER_PATH = os.path.join(BASE_DIR, "votes")
 MEMBER_FILE_PATH = os.path.join(BASE_DIR, "HSall_members.json")
 BILL_DATA_PATH = os.path.join(BASE_DIR, "bills")
 
-# --- Sanity Check (Optional but Recommended) ---
-# This will warn you if you forgot to fill in your .env file.
-if not DB_NAME or not DB_USER or not DB_PASSWORD:
-    print("WARNING: Database credentials (DB_NAME, DB_USER, DB_PASSWORD) not found in .env file.")
-
+# Note: Database credentials have sensible defaults for local development, so no warning is needed.
 if not CONGRESS_GOV_API_KEY:
     print("WARNING: CONGRESS_GOV_API_KEY not found in .env file.")
