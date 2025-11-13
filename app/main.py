@@ -469,7 +469,9 @@ def get_all_bill_subjects():
         if conn:
             conn.close()
 
-
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy'}), 200
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
