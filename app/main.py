@@ -9,7 +9,7 @@ from app import config
 app = Flask(__name__, static_folder='static', static_url_path='')
 
 # Enable CORS in development only (security requirement)
-if os.getenv('FLASK_ENV') == 'development':
+if config.FLASK_DEBUG:
     CORS(app)
     print("CORS enabled for development")
 
